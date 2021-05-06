@@ -15,7 +15,7 @@ static byte BYTE_MASK[8] = { 0b00000001,
 							 0b10000000 };
 
 byte binStrToByte(const char* binStr);
-char* byteToBinStr(byte b);
+char* byteToBinStr(byte b, bool isDispayFullBit = false);
 void setBit(byte* b, uint8_t idx, bool bit);
 bool readBit(byte b, uint8_t idx);
 

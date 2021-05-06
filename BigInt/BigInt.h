@@ -10,4 +10,11 @@ struct BigInt {
 	bool isHasSign;
 };
 
+static BigInt DefaultBigInt = {NULL, 0, false};
+
+BigInt binStrToBigInt(const char* binStr);
+char* bigIntToBinStr(BigInt b);
+void addByteToBigInt(BigInt* bigInt, byte b);
+void freeBigInt(BigInt bigI);
+
 #endif
