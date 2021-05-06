@@ -80,6 +80,7 @@ bool runInputCommand(FILE* outFile, const char* cmdLine) {
 	for (int i = 0; i < cmdListSize; i++) {
 		if (isParamMatchParam(cmdParam, cmdList[i].param)) {
 			runningState = (cmdList[i].cmdFunc == NULL) ? true : cmdList[i].cmdFunc(cmdParam, outFile);
+			break;
 		}
 	}
 	freeCommandParam(cmdParam);
