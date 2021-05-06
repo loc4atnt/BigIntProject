@@ -17,4 +17,9 @@ char* bigIntToBinStr(BigInt b);
 void addByteToBigInt(BigInt* bigInt, byte b);
 void freeBigInt(BigInt bigI);
 
+BigInt operator + (BigInt a, BigInt b);
+void convertTwoComplement(BigInt& a);
+BigInt oppositeNum(BigInt a);
+BigInt operator - (BigInt a, BigInt b);
+
 #endif
