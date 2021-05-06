@@ -58,3 +58,56 @@ void addByteToBigInt(BigInt* bigInt, byte b) {
 void freeBigInt(BigInt bigI) {
 	free(bigI.bytes);
 }
+
+BigInt operator+(BigInt a, BigInt b)
+{
+	BigInt res;
+	res.byteCount = max(a.byteCount, b.byteCount) + 1;
+	res.bytes = (byte*)malloc(res.byteCount);
+	res.bytes[0] = a.bytes[0] + b.bytes[0];
+	bool bitOverflow = (a.bytes[0] + b.bytes[0] > 255) ? 1 : 0;
+	int i = 1;
+	for (i; i < min(a.byteCount, b.byteCount); i++) {
+		res.bytes[i] = a.bytes[i] + b.bytes[i] + (bitOverflow ? 1 : 0);
+		if ((a.bytes[i] + b.bytes[i] + (bitOverflow ? 1 : 0)) > 255)  bitOverflow = 1;
+		else bitOverflow = 0;
+	}
+	BigInt* p = (a.byteCount >= b.byteCount) ? &a : &b;
+	for (i; i < res.byteCount-1; i++) {
+		res.bytes[i] = p->bytes[i] + (bitOverflow ? 1 : 0);
+		if ((p->bytes[i] + (bitOverflow ? 1 : 0)) > 255)  bitOverflow = 1;
+		else bitOverflow = 0;
+	}
+	res.bytes[res.byteCount-1] = bitOverflow ? 1 : 0;
+	//deleteByteZero(res);
+	if (res.bytes[res.byteCount-1] == 0) {
+		res.byteCount--;
+		res.bytes = (byte*)realloc(res.bytes,res.byteCount);
+	}
+	return res;
+}
+void convertTwoComplement(BigInt& res)
+{
+	for (int i = 0; i < res.byteCount; i++) {
+		res.bytes[i] = ~res.bytes[i];
+	}
+	byte v = 1;
+	byte* p = &v;
+	BigInt i = { p,1,0 };
+	res = res + i;
+
+
+}
+BigInt oppositeNum(BigInt a)
+{
+	BigInt res = a;
+	res.isHasSign = 1 - res.isHasSign;
+	convertTwoComplement(res);
+	return res;
+}
+
+BigInt operator-(BigInt a, BigInt b) {
+	BigInt res;
+	res = a + oppositeNum(b);
+	return res;
+}
