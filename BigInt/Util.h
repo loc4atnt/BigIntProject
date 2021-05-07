@@ -1,5 +1,5 @@
-#ifndef _ByteUtil_H_
-#define _ByteUtil_H_
+#ifndef _Util_H_
+#define _Util_H_
 
 #include <stdint.h>
 

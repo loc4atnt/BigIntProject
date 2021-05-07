@@ -1,7 +1,7 @@
 #ifndef _BigInt_H_
 #define _BigInt_H_
 
-#include "ByteUtil.h"
+#include "Util.h"
 #include <stdint.h>
 
 struct BigInt {

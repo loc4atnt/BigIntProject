@@ -95,9 +95,8 @@ void convertTwoComplement(BigInt& res)
 	byte* p = &v;
 	BigInt i = { p,1,0 };
 	res = res + i;
-
-
 }
+
 BigInt oppositeNum(BigInt a)
 {
 	BigInt res = a;
