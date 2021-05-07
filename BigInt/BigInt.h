@@ -26,6 +26,8 @@ void freeBigInt(BigInt* bigI);
 void fillLastByteWithSignExcess(BigInt* i);
 void addSignExcessBytes(BigInt* i, uint8_t amount);
 void removeLastByteFromBigInt(BigInt* bigInt);
+void reduceSignExcessBytes(BigInt* i);
+void reduceSignExcessFromLastByte(BigInt* bigInt);
 
 BigInt operator + (BigInt a, BigInt b);
 void convertTwoComplement(BigInt& a);
