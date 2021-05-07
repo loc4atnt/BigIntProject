@@ -1,6 +1,7 @@
 #include "BigInt.h"
 #include <malloc.h>
 #include <string.h>
+#include <math.h> 
 
 BigInt binStrToBigInt(const char* binStr) {
 	BigInt bigI = DefaultBigInt;
@@ -63,28 +64,34 @@ void freeBigInt(BigInt* bigI) {
 BigInt operator+(BigInt a, BigInt b)
 {
 	BigInt res;
-	res.byteCount = max(a.byteCount, b.byteCount) + 1;
-	res.bytes = (byte*)malloc(res.byteCount);
+	short maxByte = max(a.byteCount, b.byteCount);
+	if (a.isHasSign == b.isHasSign) {
+		res.byteCount = maxByte + 1;
+	}
+	else res.byteCount = maxByte;
+	res.bytes = (byte*)malloc(res.byteCount);	
+	if (a.byteCount != b.byteCount) {
+		BigInt* p = (a.byteCount > b.byteCount) ? &b : &a;
+		addSignExcessBytes(p, (byte)fabs(a.byteCount - b.byteCount));
+	}	
 	res.bytes[0] = a.bytes[0] + b.bytes[0];
 	bool bitOverflow = (a.bytes[0] + b.bytes[0] > 255) ? 1 : 0;
-	int i = 1;
-	for (i; i < min(a.byteCount, b.byteCount); i++) {
+	
+	for (int i = 1; i < maxByte; i++) {
 		res.bytes[i] = a.bytes[i] + b.bytes[i] + (bitOverflow ? 1 : 0);
 		if ((a.bytes[i] + b.bytes[i] + (bitOverflow ? 1 : 0)) > 255)  bitOverflow = 1;
 		else bitOverflow = 0;
 	}
-	BigInt* p = (a.byteCount >= b.byteCount) ? &a : &b;
-	for (i; i < res.byteCount-1; i++) {
-		res.bytes[i] = p->bytes[i] + (bitOverflow ? 1 : 0);
-		if ((p->bytes[i] + (bitOverflow ? 1 : 0)) > 255)  bitOverflow = 1;
-		else bitOverflow = 0;
-	}
-	res.bytes[res.byteCount-1] = bitOverflow ? 1 : 0;
-	//deleteByteZero(res);
-	if (res.bytes[res.byteCount-1] == 0) {
-		res.byteCount--;
-		res.bytes = (byte*)realloc(res.bytes,res.byteCount);
-	}
+	if (a.isHasSign == b.isHasSign) {
+		BigInt* p = &res;
+		if (!bitOverflow) {
+			removeLastByteFromBigInt(p);
+		}
+		else {
+			res.bytes[res.byteCount - 1] = 1;
+			fillLastByteWithSignExcess(p);
+		}
+	}	
 	return res;
 }
 void convertTwoComplement(BigInt& res)
@@ -95,7 +102,7 @@ void convertTwoComplement(BigInt& res)
 	byte v = 1;
 	byte* p = &v;
 	BigInt i = { p,1,0 };
-	//res = res + i;
+	res = res + i;
 }
 
 BigInt oppositeNum(BigInt a)
@@ -108,10 +115,9 @@ BigInt oppositeNum(BigInt a)
 
 BigInt operator-(BigInt a, BigInt b) {
 	BigInt res;
-	//res = a + oppositeNum(b);
-	//return res;
+	res = a + oppositeNum(b);
+	return res;
 
-	return a;
 }
 
 void fillLastByteWithSignExcess(BigInt* i) {
@@ -126,7 +132,6 @@ void fillLastByteWithSignExcess(BigInt* i) {
 
 void addSignExcessBytes(BigInt* i, uint8_t amount) {
 	if (i->isHasSign) fillLastByteWithSignExcess(i);
-
 	byte signExcess = i->isHasSign ? 0b11111111 : 0b00000000;
 	for (int idx = 0; idx < amount; idx++) {
 		addByteToBigInt(i, signExcess);
