@@ -37,3 +37,11 @@ void setBit(byte* b, uint8_t idx, bool bit) {
 bool readBit(byte b, uint8_t idx) {
 	return (b & BYTE_MASK[idx]);
 }
+
+uint16_t max(uint16_t a, uint16_t b) {
+	return a > b ? a : b;
+}
+
+uint16_t min(uint16_t a, uint16_t b) {
+	return a < b ? a : b;
+}

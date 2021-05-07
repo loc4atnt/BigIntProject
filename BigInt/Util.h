@@ -18,5 +18,7 @@ byte binStrToByte(const char* binStr);
 char* byteToBinStr(byte b, bool isDispayFullBit = false);
 void setBit(byte* b, uint8_t idx, bool bit);
 bool readBit(byte b, uint8_t idx);
+uint16_t max(uint16_t a, uint16_t b);
+uint16_t min(uint16_t a, uint16_t b);
 
 #endif

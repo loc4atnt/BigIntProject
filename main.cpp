@@ -25,6 +25,12 @@ void runInputCommands(FILE *inF, FILE *ouF) {
 }
 
 void main(int argCount, char **args) {
+	byte b1 = 0b11111111;
+	BigInt a = { &b1, 1, false};// duong 255
+	BigInt b = oppositeNum(a);
+	printf("%d, %d\n%d\n", b.byteCount, b.isHasSign, b.bytes[0]);
+	freeBigInt(b);
+	return;
 	if (argCount < 3) {
 		printf("Sai cu phap!\n");
 		printf("Cu phap lenh: 20120020_20120561.exe <input_path> <output_path>\n");
