@@ -78,6 +78,7 @@ BigInt operator+(BigInt a, BigInt b)
 		else bitOverflow = 0;
 	}
 	if (a.isHasSign == b.isHasSign) {
+		res.isHasSign = a.isHasSign;
 		BigInt* p = &res;
 		if (!bitOverflow) {
 			removeLastByteFromBigInt(p);
@@ -87,6 +88,15 @@ BigInt operator+(BigInt a, BigInt b)
 			fillLastByteWithSignExcess(p);
 		}
 	}	
+	else {
+		if (a.byteCount == b.byteCount) {
+			res.isHasSign = (!bitOverflow) ? 1 : 0;
+		}
+		else {
+			BigInt* p = (a.byteCount > b.byteCount) ? &a : &b;
+			res.isHasSign = p->isHasSign;
+		}
+	}
 	return res;
 }
 
