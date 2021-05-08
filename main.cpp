@@ -25,11 +25,10 @@ void runInputCommands(FILE *inF, FILE *ouF) {
 }
 
 void main(int argCount, char **args) {
-	byte b1 = 0b11111111;
-	BigInt a = { &b1, 1, false};// duong 255
-	BigInt b = oppositeNum(a);
-	printf("%d, %d\n%d\n", b.byteCount, b.isHasSign, b.bytes[0]);
-	freeBigInt(b);
+	BigInt a = assignValue(255);
+	BigInt b = a>>1;
+	printf("%d - %d - %d\n", a.isHasSign, a.byteCount, a.bytes[0]);
+	printf("%d - %d - %d\n", b.isHasSign, b.byteCount, b.bytes[0]);
 	return;
 	if (argCount < 3) {
 		printf("Sai cu phap!\n");

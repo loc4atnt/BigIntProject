@@ -1,9 +1,7 @@
 #include "BigInt.h"
-#include <malloc.h>
-#include <string.h>
 
 BigInt binStrToBigInt(const char* binStr) {
-	BigInt bigI = DefaultBigInt;
+	BigInt bigI;
 	uint16_t bitLen = strlen(binStr);
 
 	byte tmpByte;
@@ -29,17 +27,17 @@ BigInt binStrToBigInt(const char* binStr) {
 	return bigI;
 }
 
-char* bigIntToBinStr(BigInt b) {
-	if (b.byteCount == 0) return NULL;
+char* bigIntToBinStr(BigInt *b) {
+	if (b->byteCount == 0) return NULL;
 
-	char* tmpBinStr = byteToBinStr(b.bytes[b.byteCount - 1]);
+	char* tmpBinStr = byteToBinStr(b->bytes[b->byteCount - 1]);
 	int binStrBuffLen = strlen(tmpBinStr) + 1;
 	char* binStr = (char*)malloc(binStrBuffLen);
 	strcpy_s(binStr, binStrBuffLen, tmpBinStr);
 
-	for (int i = b.byteCount - 2; i >= 0; i--) {
+	for (int i = b->byteCount - 2; i >= 0; i--) {
 		free(tmpBinStr);
-		tmpBinStr = byteToBinStr(b.bytes[i], true);
+		tmpBinStr = byteToBinStr(b->bytes[i], true);
 		binStrBuffLen += 8;
 		binStr = (char*)realloc(binStr, binStrBuffLen);
 		strcat_s(binStr, binStrBuffLen, tmpBinStr);
@@ -53,11 +51,6 @@ void addByteToBigInt(BigInt* bigInt, byte b) {
 	bigInt->byteCount++;
 	bigInt->bytes = (byte*)realloc(bigInt->bytes, bigInt->byteCount);
 	bigInt->bytes[bigInt->byteCount - 1] = b;
-}
-
-void freeBigInt(BigInt* bigI) {
-	free(bigI->bytes);
-	*bigI = DefaultBigInt;
 }
 
 BigInt operator+(BigInt a, BigInt b)
@@ -87,31 +80,18 @@ BigInt operator+(BigInt a, BigInt b)
 	}
 	return res;
 }
-void convertTwoComplement(BigInt& res)
-{
-	for (int i = 0; i < res.byteCount; i++) {
-		res.bytes[i] = ~res.bytes[i];
-	}
-	byte v = 1;
-	byte* p = &v;
-	BigInt i = { p,1,0 };
-	//res = res + i;
-}
 
 BigInt oppositeNum(BigInt a)
 {
-	BigInt res = a;
-	res.isHasSign = 1 - res.isHasSign;
-	convertTwoComplement(res);
+	BigInt res = ~(a);
+	res = res + assignValue(1);
 	return res;
 }
 
 BigInt operator-(BigInt a, BigInt b) {
 	BigInt res;
-	//res = a + oppositeNum(b);
-	//return res;
-
-	return a;
+	res = a + oppositeNum(b);
+	return res;
 }
 
 void fillLastByteWithSignExcess(BigInt* i) {
@@ -136,7 +116,10 @@ void addSignExcessBytes(BigInt* i, uint8_t amount) {
 void removeLastByteFromBigInt(BigInt* bigInt) {
 	if (bigInt->byteCount == 0) return;
 	if (bigInt->byteCount == 1) {
-		freeBigInt(bigInt);
+		free(bigInt->bytes);
+		bigInt->bytes = NULL;
+		bigInt->byteCount = 0;
+		bigInt->isHasSign = false;
 		return;
 	}
 	bigInt->byteCount--;
@@ -148,8 +131,11 @@ void removeLastByteFromBigInt(BigInt* bigInt) {
 
 void reduceSignExcessFromLastByte(BigInt* bigInt) {
 	if (!bigInt->isHasSign) return;
+
+	// xu ly rut gon dau cho so am (bit dau = 1)
 	uint8_t signExcessBitLen = 0;
-	while (signExcessBitLen < 8 && readBit(bigInt->bytes[bigInt->byteCount - 1], 7 - signExcessBitLen)==1)
+	while (signExcessBitLen < 7 && readBit(bigInt->bytes[bigInt->byteCount - 1], 7 - signExcessBitLen)==1
+		&& readBit(bigInt->bytes[bigInt->byteCount - 1], 7 - signExcessBitLen - 1) == 1)
 		signExcessBitLen++;
 	for (int i = 7; i >= 8 - signExcessBitLen; i--) {
 		setBit(&bigInt->bytes[bigInt->byteCount - 1], i, 0);
@@ -158,13 +144,83 @@ void reduceSignExcessFromLastByte(BigInt* bigInt) {
 
 void reduceSignExcessBytes(BigInt* i) {
 	byte signExcess = i->isHasSign ? 0b11111111 : 0b00000000;
-	while (i->byteCount > 0 && i->bytes[i->byteCount - 1] == signExcess) {
+	while (i->byteCount > 1 && i->bytes[i->byteCount - 1] == signExcess
+		&& (readBit(i->bytes[i->byteCount - 2], 7) == i->isHasSign) ) {
 		removeLastByteFromBigInt(i);
 	}
 	reduceSignExcessFromLastByte(i);
 }
 
 BigInt operator ~ (BigInt a) {
-	BigInt tmpA = a;
-	return a;
+	BigInt notA = a;
+	addSignExcessBytes(&notA, 1);
+	for (int i = 0; i < notA.byteCount; i++) {
+		notA.bytes[i] = ~notA.bytes[i];
+	}
+	notA.isHasSign = !notA.isHasSign;
+	reduceSignExcessBytes(&notA);
+	return notA;
+}
+
+BigInt assignValue(int iVal) {
+	BigInt bI;
+	if (iVal == 0) {
+		addByteToBigInt(&bI, 0);
+		return bI;
+	}
+
+	bool isNegative;
+	if ( (isNegative=(iVal < 0)) ) {
+		iVal = -iVal;
+	}
+	
+	byte tmpDigit;
+	while (iVal > 0) {
+		tmpDigit = iVal % 256;
+		iVal /= 256;
+		addByteToBigInt(&bI, tmpDigit);
+	}
+	if (isNegative) bI = oppositeNum(bI);
+	return bI;
+}
+
+bool readBit(BigInt *a, uint16_t idx) {
+	fillLastByteWithSignExcess(a);
+	uint16_t byteIdx = idx / 8;
+	uint8_t bitInByteIdx = idx % 8;
+	if (byteIdx >= a->byteCount) return a->isHasSign;
+	return readBit(a->bytes[byteIdx], bitInByteIdx);
+}
+
+void setBit(BigInt *a, uint16_t idx, bool bit) {
+	uint16_t byteIdx = idx / 8;
+	uint8_t bitInByteIdx = idx % 8;
+	if (byteIdx >= (a->byteCount - 1)) {
+		addSignExcessBytes(a, byteIdx - (a->byteCount - 1) + 1);
+	}
+
+	setBit(&(a->bytes[byteIdx]), bitInByteIdx, bit);
+	reduceSignExcessBytes(a);
+}
+
+BigInt operator >> (BigInt a, int steps) {
+	if (steps == 0) return a;
+	if (steps < 0) return (a<<(-steps));
+
+	BigInt res = a;
+	uint16_t movingBitLen = res.byteCount * 8;
+	for (int i = 0; i < movingBitLen; i++) {
+		setBit(&res, i, readBit(&res, i + steps));
+	}
+
+	reduceSignExcessFromLastByte(&res);
+	return res;
+}
+
+BigInt operator << (BigInt a, int steps) {
+	if (steps == 0) return a;
+	if (steps < 0) return (a >> (-steps));
+
+	BigInt res = a;
+	return res;
 }
