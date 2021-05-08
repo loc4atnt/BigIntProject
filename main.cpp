@@ -25,10 +25,10 @@ void runInputCommands(FILE *inF, FILE *ouF) {
 }
 
 void main(int argCount, char **args) {
-	BigInt a = assignValue(255);
-	BigInt b = a>>1;
-	printf("%d - %d - %d\n", a.isHasSign, a.byteCount, a.bytes[0]);
-	printf("%d - %d - %d\n", b.isHasSign, b.byteCount, b.bytes[0]);
+	BigInt a = assignValue(-255);
+	BigInt b = a + assignValue(255);
+	printf("%d - %d - %d - %d\n", a.isHasSign, a.byteCount, a.bytes[0], a.bytes[1]);
+	printf("%d - %d - %d - %d\n", b.isHasSign, b.byteCount, b.bytes[0], b.bytes[1]);
 	return;
 	if (argCount < 3) {
 		printf("Sai cu phap!\n");
