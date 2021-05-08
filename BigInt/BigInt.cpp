@@ -103,6 +103,59 @@ BigInt operator-(BigInt a, BigInt b) {
 	return res;
 }
 
+BigInt operator * (BigInt a, BigInt b) {
+	return BigInt();
+}
+
+BigInt operator / (BigInt a, BigInt b) {
+	return BigInt();
+}
+
+BigInt operator % (BigInt a, BigInt b) {
+	return BigInt();
+}
+
+bool isNonZero(BigInt z) {
+	for (int i = 0; i < z.byteCount; i++) {
+		if (z.bytes[i] != 0) {
+			return 1;
+		}
+	} 
+	return 0;
+}
+BigInt decStrToBigInt(const char* decStr)
+{
+	BigInt res = assignValue(0);
+	BigInt dec = assignValue(10);
+	BigInt idx = assignValue(1);
+	BigInt num = assignValue(0);
+	short decStrLen = strlen(decStr);
+	num.bytes[0] = decStr[decStrLen - 1] - '0';
+	res = res + num * idx;
+	for (int i = decStrLen-2; i >= 0 ; i--) {
+		num.bytes[0] = decStr[i] - '0';
+		idx = idx * dec;
+		res = res + num * idx;
+	}
+	return res;
+}
+
+char* bigIntToDecStr(BigInt b)
+{
+	byte i = b.byteCount * 24 / 10 + 1;
+	char* res =  (char*)malloc(i);	
+	i = { 0 };
+	BigInt dec = assignValue(10),z1,z2=b;
+	do
+	{
+		z1 = z2 % dec;    
+		z2 = z2 / dec; 
+		res[i] = z1.bytes[0] + '0';
+		i--;
+	} while (isNonZero(z2));	
+	return res;
+}
+
 void fillLastByteWithSignExcess(BigInt* i) {
 	if (!i->isHasSign) return;
 	uint8_t lastHighBitIdxInLastByte = 7;
