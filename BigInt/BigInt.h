@@ -6,6 +6,7 @@
 #include <stdio.h>
 #include <malloc.h>
 #include <string.h>
+#include "../Config.h"
 
 struct BigInt {
 	byte* bytes;
@@ -50,7 +51,13 @@ BigInt assignValue(int val);
 BigInt oppositeNum(BigInt a);
 BigInt operator + (BigInt a, BigInt b);
 BigInt operator - (BigInt a, BigInt b);
+
+BigInt AndOrXor(BigInt a, BigInt b, byte (*calFunc)(byte b1, byte b2));
 BigInt operator ~ (BigInt a);
+BigInt operator & (BigInt a, BigInt b);
+BigInt operator ^ (BigInt a, BigInt b);
+BigInt operator | (BigInt a, BigInt b);
+
 BigInt operator >> (BigInt a, int steps);
 BigInt operator << (BigInt a, int steps);
 

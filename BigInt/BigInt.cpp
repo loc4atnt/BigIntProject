@@ -178,7 +178,7 @@ BigInt assignValue(int iVal) {
 	}
 
 	bool isNegative;
-	if ( (isNegative=(iVal < 0)) ) {
+	if ((isNegative = (iVal < 0))) {
 		iVal = -iVal;
 	}
 	
@@ -249,4 +249,36 @@ BigInt operator << (BigInt a, int steps) {
 	}
 	reduceSignExcessBytes(&res);
 	return res;
+}
+
+BigInt AndOrXor(BigInt a, BigInt b, byte(*calFunc)(byte b1, byte b2)) {
+	BigInt res = a;
+	int sharedByteCount = max(a.byteCount, b.byteCount) + 1;
+	addSignExcessBytes(&res, sharedByteCount - res.byteCount);
+	addSignExcessBytes(&a, sharedByteCount - a.byteCount);
+	addSignExcessBytes(&b, sharedByteCount - b.byteCount);
+#ifdef DEBUG
+	printf("debugandorxor\n");
+	printf("%s\n", bigIntToBinStr(&res));
+	printf("%s\n", bigIntToBinStr(&a));
+	printf("%s\n", bigIntToBinStr(&b));
+#endif
+	for (int i = 0; i < sharedByteCount; i++) {
+		res.bytes[i] = calFunc(a.bytes[i], b.bytes[i]);
+	}
+	res.isHasSign = readBit(res.bytes[res.byteCount - 1], 7);
+	//reduceSignExcessBytes(&res);
+	return res;
+}
+
+BigInt operator & (BigInt a, BigInt b) {
+	return AndOrXor(a, b, AndByte);
+}
+
+BigInt operator ^ (BigInt a, BigInt b) {
+	return AndOrXor(a, b, XorByte);
+}
+
+BigInt operator | (BigInt a, BigInt b) {
+	return AndOrXor(a, b, OrByte);
 }

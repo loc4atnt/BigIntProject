@@ -20,5 +20,8 @@ void setBit(byte* b, uint8_t idx, bool bit);
 bool readBit(byte b, uint8_t idx);
 uint16_t max(uint16_t a, uint16_t b);
 uint16_t min(uint16_t a, uint16_t b);
+byte AndByte(byte b1, byte b2);
+byte OrByte(byte b1, byte b2);
+byte XorByte(byte b1, byte b2);
 
 #endif
