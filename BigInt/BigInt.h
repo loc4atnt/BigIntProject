@@ -56,5 +56,6 @@ BigInt operator << (BigInt a, int steps);
 
 bool readBit(BigInt *a, uint16_t idx);
 void setBit(BigInt *a, uint16_t idx, bool bit);
+uint16_t getBitLen(BigInt* bigInt);
 
 #endif

@@ -225,10 +225,28 @@ BigInt operator >> (BigInt a, int steps) {
 	return res;
 }
 
+uint16_t getBitLen(BigInt* bigInt) {
+	uint16_t bitLen = (bigInt->byteCount * 8);
+	for (int i = 7; i >= 0; i--) {
+		if (readBit(bigInt->bytes[bigInt->byteCount - 1], i) == 1) break;
+		bitLen--;
+	}
+	return bitLen;
+}
+
 BigInt operator << (BigInt a, int steps) {
 	if (steps == 0) return a;
 	if (steps < 0) return (a >> (-steps));
 
 	BigInt res = a;
+	uint16_t movingBitLen = getBitLen(&a);
+	addSignExcessBytes(&res, (steps/8) + 1);
+	for (int i = movingBitLen+steps-1; i >= steps; i--) {
+		setBit(&res, i, readBit(&res, i - steps));
+	}
+	for (int i = 0; i < steps; i++) {
+		setBit(&res, i, 0);
+	}
+	reduceSignExcessBytes(&res);
 	return res;
 }
