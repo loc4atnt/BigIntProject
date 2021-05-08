@@ -56,6 +56,8 @@ BigInt operator + (BigInt a, BigInt b);
 BigInt operator - (BigInt a, BigInt b);
 BigInt operator * (BigInt a, BigInt b);
 BigInt operator / (BigInt a, BigInt b);
+BigInt operator % (BigInt a, BigInt b);
+
 
 BigInt AndOrXor(BigInt a, BigInt b, byte (*calFunc)(byte b1, byte b2));
 BigInt operator ~ (BigInt a);
