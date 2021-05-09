@@ -24,9 +24,49 @@ void runInputCommands(FILE *inF, FILE *ouF) {
 	}
 }
 
+//int test(int a, int b) {
+//	a = -a;
+//
+//	int q = 0;
+//	int c, b_phay;
+//	while (a >= b) {
+//		c = 1;
+//		b_phay = b;
+//		while ((b_phay = (b_phay << 1)) <= a) {
+//			c = c << 1;
+//		}
+//		b_phay = b_phay >> 1;
+//		q = q + c;
+//		printf("%d-%d\n", a, b_phay);
+//		a = a - b_phay;
+//		printf("%d-%d\n", a, b_phay);
+//	}
+//	return -q;
+//}
+//
+//int test2(int a, int b) {
+//	a = -a;
+//
+//	int q = 0;
+//	int c, b_phay;
+//	while (a >= b) {
+//		c = 1;
+//		b_phay = b;
+//		while ((b_phay = (b_phay << 1)) <= a) {
+//			c = c << 1;
+//		}
+//		b_phay = b_phay >> 1;
+//		q = q + c;
+//		printf("%d-%d\n", a, b_phay);
+//		a = a - b_phay;
+//		printf("%d-%d\n", a, b_phay);
+//	}
+//	return -a;
+//}
+
 void main(int argCount, char **args) {
-	BigInt a = assignValue(4);
-	BigInt b = assignValue(1);
+	BigInt a = assignValue(1);
+	BigInt b = assignValue(4);
 	BigInt c = a + b;
 	//printf("%d\n", a == b);//decStrToBigInt//bigIntToDecStr
 	printf("A: %s\n", bigIntToBinStr(&a));

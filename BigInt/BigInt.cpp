@@ -179,20 +179,51 @@ BigInt operator * (BigInt a, BigInt b) {
 BigInt operator / (BigInt a, BigInt b) {
 	if (b == 0) return BigInt();
 
-	BigInt res = assignValue(0);
+	BigInt q = assignValue(0);
 	bool isResNegative = (a.isHasSign == b.isHasSign);//a, b cung dau thi res duong, khac dau thi res am
 	a = abs(a);
 	b = abs(b);
 
-	//
+	BigInt componentQ;
+	BigInt tmpB;
+	while (a >= b) {
+		componentQ = assignValue(1);
+		tmpB = b;
+		while ((tmpB = (tmpB << 1)) <= a) {
+			componentQ = componentQ << 1;
+		}
+		tmpB = tmpB >> 1;// tra lai 1 lan dich bit khien dieu kien cua while tren sai
+		q = q + componentQ;
+		a = a - tmpB;
+	}
 
-	if (isResNegative) return oppositeNum(res);
-	return res;
+	if (isResNegative) return oppositeNum(q);
+	return q;
 }
 
 BigInt operator % (BigInt a, BigInt b) {
 	if (b == 0) return BigInt();
-	return a - ((a / b) * b);
+	
+	BigInt q = assignValue(0);
+	bool isResNegative = (a.isHasSign == b.isHasSign);//a, b cung dau thi res duong, khac dau thi res am
+	a = abs(a);
+	b = abs(b);
+
+	BigInt componentQ;
+	BigInt tmpB;
+	while (a >= b) {
+		componentQ = assignValue(1);
+		tmpB = b;
+		while ((tmpB = (tmpB << 1)) <= a) {
+			componentQ = componentQ << 1;
+		}
+		tmpB = tmpB >> 1;// tra lai 1 lan dich bit khien dieu kien cua while tren sai
+		q = q + componentQ;
+		a = a - tmpB;
+	}
+
+	if (isResNegative) return oppositeNum(a);
+	return a;
 }
 
 bool isNonZero(BigInt z) {
