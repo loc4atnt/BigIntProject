@@ -25,16 +25,16 @@ void runInputCommands(FILE *inF, FILE *ouF) {
 }
 
 void main(int argCount, char **args) {
-	BigInt a = assignValue(-1);
-	BigInt b = assignValue(2);
+	BigInt a = assignValue(-3);
+	BigInt b = assignValue(-2);
 	BigInt c = a + b;
 	//printf("%d\n", a == b);//decStrToBigInt//bigIntToDecStr
 	printf("A: %s\n", bigIntToBinStr(&a));
 	printf("B: %s\n", bigIntToBinStr(&b));
 	printf("C: %s\n", bigIntToBinStr(&c));
 	printf("C: %d - %d - %d\n\n", c.isHasSign, c.byteCount, c.bytes[0]);
-	printf("%d - %d - %d\n", a.isHasSign, a.byteCount, a.bytes[0]);
-	printf("%d - %d - %d\n", b.isHasSign, b.byteCount, b.bytes[0]);
+	printf("A: %d - %d - %d\n", a.isHasSign, a.byteCount, a.bytes[0]);
+	printf("B: %d - %d - %d\n", b.isHasSign, b.byteCount, b.bytes[0]);
 	return;
 	if (argCount < 3) {
 		printf("Sai cu phap!\n");

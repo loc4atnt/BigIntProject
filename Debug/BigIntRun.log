@@ -1,0 +1,11 @@
+﻿  BigIntIO.cpp
+C:\Users\admin\source\repos\loc4atnt\BigIntProject\bigintio\BigIntIO.cpp(40,47): warning C4267: 'initializing': conversion from 'size_t' to 'uint8_t', possible loss of data
+  main.cpp
+  BigInt.cpp
+C:\Users\admin\source\repos\loc4atnt\BigIntProject\BigInt\BigInt.cpp(8,34): warning C4267: 'initializing': conversion from 'size_t' to 'uint16_t', possible loss of data
+C:\Users\admin\source\repos\loc4atnt\BigIntProject\BigInt\BigInt.cpp(142,34): warning C4267: 'initializing': conversion from 'size_t' to 'short', possible loss of data
+  Util.cpp
+C:\Users\admin\source\repos\loc4atnt\BigIntProject\BigInt\Util.cpp(8,36): warning C4267: 'initializing': conversion from 'size_t' to 'uint8_t', possible loss of data
+  Generating Code...
+MSVCRTD.lib(exe_winmain.obj) : error LNK2019: unresolved external symbol _WinMain@16 referenced in function "int __cdecl invoke_main(void)" (?invoke_main@@YAHXZ)
+C:\Users\admin\source\repos\loc4atnt\BigIntProject\BigInt\Debug\BigIntRun.exe : fatal error LNK1120: 1 unresolved externals
