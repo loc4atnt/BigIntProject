@@ -51,6 +51,8 @@ bool isNonZero(BigInt z);
 BigInt decStrToBigInt(const char* decStr);
 char* bigIntToDecStr(BigInt *b);
 
+bool isOddBigInt(BigInt* bI);
+bool isEvenBigInt(BigInt* bI);
 BigInt assignValue(int val);
 BigInt oppositeNum(BigInt a);
 BigInt operator + (BigInt a, BigInt b);
@@ -58,7 +60,6 @@ BigInt operator - (BigInt a, BigInt b);
 BigInt operator * (BigInt a, BigInt b);
 BigInt operator / (BigInt a, BigInt b);
 BigInt operator % (BigInt a, BigInt b);
-
 
 BigInt AndOrXor(BigInt a, BigInt b, byte (*calFunc)(byte b1, byte b2));
 BigInt operator ~ (BigInt a);
@@ -72,9 +73,11 @@ BigInt operator << (BigInt a, int steps);
 bool operator > (int a, BigInt b);
 bool operator > (BigInt a, int b);
 bool operator > (BigInt a, BigInt b);
+bool operator >= (BigInt a, BigInt b);
 bool operator < (int a, BigInt b);
 bool operator < (BigInt a, int b);
 bool operator < (BigInt a, BigInt b);
+bool operator <= (BigInt a, BigInt b);
 bool operator == (BigInt a, BigInt b);
 bool operator == (BigInt a, int b);
 bool operator != (BigInt a, int b);

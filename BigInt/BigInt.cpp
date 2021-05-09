@@ -102,6 +102,7 @@ BigInt operator+(BigInt a, BigInt b)
 
 BigInt oppositeNum(BigInt a)
 {
+	if (a == 0) return a;
 	BigInt res = ~(a);
 	res = res + assignValue(1);
 	return res;
@@ -113,16 +114,65 @@ BigInt operator-(BigInt a, BigInt b) {
 	return res;
 }
 
+bool isOddBigInt(BigInt* bI) {
+	if (bI->byteCount == 0) return false;
+	return (bI->bytes[0] & 1);
+}
+bool isEvenBigInt(BigInt* bI) {
+	return !isOddBigInt(bI);
+}
+
+void swap(BigInt* a, BigInt* b) {
+	byte* tmpByte = a->bytes;
+	uint16_t tmpByteCount = a->byteCount;
+	bool tmpIsHasSign = a->isHasSign;
+
+	a->bytes = b->bytes;
+	a->byteCount = b->byteCount;
+	a->isHasSign = b->isHasSign;
+
+	b->bytes = tmpByte;
+	b->byteCount = tmpByteCount;
+	b->isHasSign = tmpIsHasSign;
+}
+
 BigInt operator * (BigInt a, BigInt b) {
-	return BigInt();
+	BigInt res = assignValue(0);
+	bool isResNegative = (a.isHasSign == b.isHasSign);//a, b cung dau thi res duong, khac dau thi res am
+	a = abs(a);
+	b = abs(b);
+	if (a < b) { // So hang thu 2 nen la so hang nho hon
+		swap(&a, &b);
+	}
+
+	while (b > 0) {
+		if (isOddBigInt(&b)) {
+			res = res + a;
+		}
+		a = a << 1;// a*=2
+		b = b >> 1;// b/=2;
+	}
+	if (isResNegative) return oppositeNum(res);
+	return res;
 }
 
 BigInt operator / (BigInt a, BigInt b) {
-	return BigInt();
+	if (b == 0) return BigInt();
+
+	BigInt res = assignValue(0);
+	bool isResNegative = (a.isHasSign == b.isHasSign);//a, b cung dau thi res duong, khac dau thi res am
+	a = abs(a);
+	b = abs(b);
+
+	//
+
+	if (isResNegative) return oppositeNum(res);
+	return res;
 }
 
 BigInt operator % (BigInt a, BigInt b) {
-	return BigInt();
+	if (b == 0) return BigInt();
+	return a - ((a / b) * b);
 }
 
 bool isNonZero(BigInt z) {
@@ -449,4 +499,12 @@ BigInt min(BigInt a, BigInt b) {
 
 BigInt max(BigInt a, BigInt b) {
 	return (a > b) ? a : b;
+}
+
+bool operator >= (BigInt a, BigInt b) {
+	return (a == b) || (a > b);
+}
+
+bool operator <= (BigInt a, BigInt b) {
+	return (a == b) || (a < b);
 }
