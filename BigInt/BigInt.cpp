@@ -65,8 +65,12 @@ BigInt operator+(BigInt a, BigInt b)
 	}
 	else res.byteCount = maxByte;
 	res.bytes = (byte*)malloc(res.byteCount);	
+	BigInt* p = &a;
+	fillLastByteWithSignExcess(p);
+	p = &b;
+	fillLastByteWithSignExcess(p);
 	if (a.byteCount != b.byteCount) {
-		BigInt* p = (a.byteCount > b.byteCount) ? &b : &a;
+		p = (a.byteCount > b.byteCount) ? &b : &a;
 		addSignExcessBytes(p, (byte)fabs(a.byteCount - b.byteCount));
 	}	
 	res.bytes[0] = a.bytes[0] + b.bytes[0];
@@ -77,26 +81,29 @@ BigInt operator+(BigInt a, BigInt b)
 		if ((a.bytes[i] + b.bytes[i] + (bitOverflow ? 1 : 0)) > 255)  bitOverflow = 1;
 		else bitOverflow = 0;
 	}
+	p = &res;
 	if (a.isHasSign == b.isHasSign) {
 		res.isHasSign = a.isHasSign;
-		BigInt* p = &res;
-		if (!bitOverflow) {
-			removeLastByteFromBigInt(p);
-		}
-		else {
+		
+		if (bitOverflow) {
 			res.bytes[res.byteCount - 1] = 1;
 			fillLastByteWithSignExcess(p);
 		}
+		reduceSignExcessBytes(p);
 	}	
 	else {
 		if (a.byteCount == b.byteCount) {
 			res.isHasSign = (!bitOverflow) ? 1 : 0;
 		}
 		else {
-			BigInt* p = (a.byteCount > b.byteCount) ? &a : &b;
+			p = (a.byteCount > b.byteCount) ? &a : &b;
 			res.isHasSign = p->isHasSign;
 		}
 	}
+	p = &a;
+	reduceSignExcessBytes(p);
+	p = &b;
+	reduceSignExcessBytes(p);
 	return res;
 }
 
