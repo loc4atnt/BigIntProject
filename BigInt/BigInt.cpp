@@ -88,8 +88,9 @@ BigInt operator+(BigInt a, BigInt b)
 		if (bitOverflow) {
 			res.bytes[res.byteCount - 1] = 1;
 			fillLastByteWithSignExcess(p);
+			reduceSignExcessBytes(p);
 		}
-		reduceSignExcessBytes(p);
+		else removeLastByteFromBigInt(p);
 	}	
 	else {
 		if (a.byteCount == b.byteCount) {
@@ -104,7 +105,6 @@ BigInt operator+(BigInt a, BigInt b)
 	reduceSignExcessBytes(p);
 	p = &b;
 	reduceSignExcessBytes(p);
-	reduceSignExcessBytes(&res);
 	return res;
 }
 
@@ -226,10 +226,6 @@ BigInt operator % (BigInt a, BigInt b) {
 	return a;
 }
 
-bool isNonZero(BigInt z) {
-	return z != 0;
-}
-
 BigInt decStrToBigInt(const char* decStr)
 {
 	BigInt res = assignValue(0);
@@ -238,7 +234,7 @@ BigInt decStrToBigInt(const char* decStr)
 	BigInt num = assignValue(0);
 	short decStrLen = strlen(decStr);
 	num.bytes[0] = decStr[decStrLen - 1] - '0';
-	res = res + num * idx;
+	res = res + num ;
 	for (int i = decStrLen-2; i >= 0 ; i--) {
 		num.bytes[0] = decStr[i] - '0';
 		idx = idx * dec;
@@ -249,9 +245,13 @@ BigInt decStrToBigInt(const char* decStr)
 
 char* bigIntToDecStr(BigInt *b)
 {
-	byte i = b->byteCount * 24 / 10 + 1;
+	byte i = b->byteCount * 24 / 10 + 2;
 	char* res =  (char*)malloc(i);	
 	i = { 0 };
+	if (b->isHasSign == 1) {
+		res[0] = '-';
+		b = &oppositeNum(*b);
+	}
 	BigInt dec = assignValue(10),z1,z2=(*b);
 	do
 	{
@@ -259,7 +259,7 @@ char* bigIntToDecStr(BigInt *b)
 		z2 = z2 / dec; 
 		res[i] = z1.bytes[0] + '0';
 		i--;
-	} while (isNonZero(z2));	
+	} while (z2 != 0);	
 	return res;
 }
 
