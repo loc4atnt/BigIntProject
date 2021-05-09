@@ -47,11 +47,18 @@ void removeLastByteFromBigInt(BigInt* bigInt);
 void reduceSignExcessBytes(BigInt* i);
 void reduceSignExcessFromLastByte(BigInt* bigInt);
 bool isNullBigInt(BigInt& a);
+bool isNonZero(BigInt z);
+BigInt decStrToBigInt(const char* decStr);
+char* bigIntToDecStr(BigInt *b);
 
 BigInt assignValue(int val);
 BigInt oppositeNum(BigInt a);
 BigInt operator + (BigInt a, BigInt b);
 BigInt operator - (BigInt a, BigInt b);
+BigInt operator * (BigInt a, BigInt b);
+BigInt operator / (BigInt a, BigInt b);
+BigInt operator % (BigInt a, BigInt b);
+
 
 BigInt AndOrXor(BigInt a, BigInt b, byte (*calFunc)(byte b1, byte b2));
 BigInt operator ~ (BigInt a);
@@ -70,6 +77,7 @@ bool operator < (BigInt a, int b);
 bool operator < (BigInt a, BigInt b);
 bool operator == (BigInt a, BigInt b);
 bool operator == (BigInt a, int b);
+bool operator != (BigInt a, int b);
 
 bool readBit(BigInt *a, uint16_t idx);
 void setBit(BigInt *a, uint16_t idx, bool bit);
