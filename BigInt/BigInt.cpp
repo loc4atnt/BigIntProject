@@ -104,6 +104,7 @@ BigInt operator+(BigInt a, BigInt b)
 	reduceSignExcessBytes(p);
 	p = &b;
 	reduceSignExcessBytes(p);
+	reduceSignExcessBytes(&res);
 	return res;
 }
 
@@ -111,12 +112,24 @@ BigInt oppositeNum(BigInt a)
 {
 	if (a == 0) return a;
 	BigInt res = ~(a);
+#ifdef DEBUG
+	printf("oppositeNum - 1: %s\n", bigIntToBinStr(&res));
+	printf("R: %d - %d - %d\n\n", res.isHasSign, res.byteCount, res.bytes[0]);
+#endif
 	res = res + assignValue(1);
+#ifdef DEBUG
+	printf("oppositeNum - 2: %s\n", bigIntToBinStr(&res));
+#endif
 	return res;
 }
 
 BigInt operator-(BigInt a, BigInt b) {
 	BigInt res;
+#ifdef DEBUG
+	BigInt tmp = oppositeNum(b);
+	printf("operator- - 1: %s\n", bigIntToBinStr(&a));
+	printf("operator- - 2: %s\n", bigIntToBinStr(&tmp));
+#endif
 	res = a + oppositeNum(b);
 	return res;
 }
@@ -272,7 +285,6 @@ void reduceSignExcessBytes(BigInt* i) {
 		&& (readBit(i->bytes[i->byteCount - 2], 7) == i->isHasSign) ) {
 		removeLastByteFromBigInt(i);
 	}
-	reduceSignExcessFromLastByte(i);
 }
 
 BigInt operator ~ (BigInt a) {

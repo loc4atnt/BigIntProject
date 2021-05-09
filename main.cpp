@@ -25,8 +25,8 @@ void runInputCommands(FILE *inF, FILE *ouF) {
 }
 
 void main(int argCount, char **args) {
-	BigInt a = assignValue(-3);
-	BigInt b = assignValue(-2);
+	BigInt a = assignValue(4);
+	BigInt b = assignValue(1);
 	BigInt c = a + b;
 	//printf("%d\n", a == b);//decStrToBigInt//bigIntToDecStr
 	printf("A: %s\n", bigIntToBinStr(&a));
