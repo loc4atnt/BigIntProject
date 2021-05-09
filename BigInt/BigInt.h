@@ -46,6 +46,7 @@ void addSignExcessBytes(BigInt* i, uint8_t amount);
 void removeLastByteFromBigInt(BigInt* bigInt);
 void reduceSignExcessBytes(BigInt* i);
 void reduceSignExcessFromLastByte(BigInt* bigInt);
+bool isNullBigInt(BigInt& a);
 
 BigInt assignValue(int val);
 BigInt oppositeNum(BigInt a);
@@ -61,8 +62,21 @@ BigInt operator | (BigInt a, BigInt b);
 BigInt operator >> (BigInt a, int steps);
 BigInt operator << (BigInt a, int steps);
 
+bool operator > (int a, BigInt b);
+bool operator > (BigInt a, int b);
+bool operator > (BigInt a, BigInt b);
+bool operator < (int a, BigInt b);
+bool operator < (BigInt a, int b);
+bool operator < (BigInt a, BigInt b);
+bool operator == (BigInt a, BigInt b);
+bool operator == (BigInt a, int b);
+
 bool readBit(BigInt *a, uint16_t idx);
 void setBit(BigInt *a, uint16_t idx, bool bit);
 uint16_t getBitLen(BigInt* bigInt);
+
+BigInt abs(BigInt i);
+BigInt min(BigInt a, BigInt b);
+BigInt max(BigInt a, BigInt b);
 
 #endif

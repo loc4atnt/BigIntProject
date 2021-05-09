@@ -267,7 +267,7 @@ BigInt AndOrXor(BigInt a, BigInt b, byte(*calFunc)(byte b1, byte b2)) {
 		res.bytes[i] = calFunc(a.bytes[i], b.bytes[i]);
 	}
 	res.isHasSign = readBit(res.bytes[res.byteCount - 1], 7);
-	//reduceSignExcessBytes(&res);
+	reduceSignExcessBytes(&res);
 	return res;
 }
 
@@ -281,4 +281,109 @@ BigInt operator ^ (BigInt a, BigInt b) {
 
 BigInt operator | (BigInt a, BigInt b) {
 	return AndOrXor(a, b, OrByte);
+}
+
+bool operator > (BigInt a, int b) {
+	// Xu ly de quy
+	// Truong hop co ban b == 0 HOAC a == 0
+	if (a == 0) {
+		return 0 > b;
+	}
+	if (b == 0) {
+		return (a.isHasSign == 0); // && a!= 0 <=> a duong
+	}
+
+	BigInt tmpBigIntB = assignValue(b);
+	return a > tmpBigIntB;
+}
+
+bool operator > (int a, BigInt b) {
+	return b < a;
+}
+
+bool operator > (BigInt a, BigInt b) {
+	if (a.isHasSign != b.isHasSign) return (a.isHasSign == false && b.isHasSign == true);// a khong am, b am thi return true
+	
+	// Xu ly de quy
+	// Truong hop co ban: a == 0 HOAC b == 0
+	if (a == 0) return (0 > b);
+	if (b == 0) return (a > 0);
+	BigInt delta = a - b;
+	return delta>0;
+}
+
+bool operator < (BigInt a, int b) {
+	// Xu ly de quy
+	// Truong hop co ban b == 0 HOAC a == 0
+	if (a == 0) {
+		return 0 < b;
+	}
+	if (b == 0) {
+		return (a.isHasSign == 1); // && a!= 0 <=> a am
+	}
+
+	BigInt tmpBigIntB = assignValue(b);
+	return a < tmpBigIntB;
+}
+
+bool operator < (int a, BigInt b) {
+	return b > a;
+}
+
+bool operator < (BigInt a, BigInt b) {
+	if (a.isHasSign != b.isHasSign) return (a.isHasSign == true && b.isHasSign == false);// a am, b khong am thi return true
+
+	// Xu ly de quy
+	// Truong hop co ban: a == 0 HOAC b == 0
+	if (a == 0) return (0 < b);
+	if (b == 0) return (a < 0);
+	BigInt delta = a - b;
+	return delta < 0;
+}
+
+bool operator == (BigInt a, BigInt b) {
+	//if (isNullBigInt(a) || isNullBigInt(b)) return false;
+	//if (a.isHasSign != b.isHasSign) return false;
+	//uint16_t compareByteAmount = max(a.byteCount, b.byteCount);
+	//addSignExcessBytes(&a, compareByteAmount - a.byteCount);
+	//addSignExcessBytes(&b, compareByteAmount - b.byteCount);
+	//for (int i = 0; i < compareByteAmount; i++) {
+	//	if (a.bytes[i] != b.bytes[i]) return false;
+	//}
+	//return true;
+
+	if (isNullBigInt(a) || isNullBigInt(b)) return false;
+	if (a.isHasSign != b.isHasSign) return false;
+
+	BigInt delta = a - b;
+	return delta == 0;
+}
+
+bool operator == (BigInt a, int b) {
+	// Xu ly de quy
+	// Truong hop co ban b == 0
+	if (b == 0) {
+		reduceSignExcessBytes(&a);
+		return (a.byteCount == 1) && (a.bytes[0] == 0) && (a.isHasSign == false);
+	}
+
+	BigInt bigIntB = assignValue(b);
+	return a == bigIntB;
+}
+
+bool isNullBigInt(BigInt& a) {
+	return a.byteCount == 0 || a.bytes == NULL;
+}
+
+BigInt abs(BigInt i) {
+	if (i.isHasSign == true) return oppositeNum(i);
+	return i;
+}
+
+BigInt min(BigInt a, BigInt b) {
+	return (a < b) ? a : b;
+}
+
+BigInt max(BigInt a, BigInt b) {
+	return (a > b) ? a : b;
 }
