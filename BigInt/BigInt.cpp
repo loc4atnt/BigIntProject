@@ -105,6 +105,7 @@ BigInt operator+(BigInt a, BigInt b)
 	reduceSignExcessBytes(p);
 	p = &b;
 	reduceSignExcessBytes(p);
+	reduceSignExcessBytes(&res);
 	return res;
 }
 
@@ -250,7 +251,7 @@ char* bigIntToDecStr(BigInt *b)
 	i = { 0 };
 	if (b->isHasSign == 1) {
 		res[0] = '-';
-		b = &oppositeNum(*b);
+		(*b) = oppositeNum(*b);
 	}
 	BigInt dec = assignValue(10),z1,z2=(*b);
 	do
@@ -316,6 +317,7 @@ void reduceSignExcessBytes(BigInt* i) {
 		&& (readBit(i->bytes[i->byteCount - 2], 7) == i->isHasSign) ) {
 		removeLastByteFromBigInt(i);
 	}
+	reduceSignExcessFromLastByte(i);
 }
 
 BigInt operator ~ (BigInt a) {
