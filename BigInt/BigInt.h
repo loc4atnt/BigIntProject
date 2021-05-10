@@ -47,9 +47,9 @@ void removeLastByteFromBigInt(BigInt* bigInt);
 void reduceSignExcessBytes(BigInt* i);
 void reduceSignExcessFromLastByte(BigInt* bigInt);
 bool isNullBigInt(BigInt& a);
-bool isNonZero(BigInt z);
 BigInt decStrToBigInt(const char* decStr);
 char* bigIntToDecStr(BigInt *b);
+int32_t getValue(BigInt n);
 
 bool isOddBigInt(BigInt* bI);
 bool isEvenBigInt(BigInt* bI);

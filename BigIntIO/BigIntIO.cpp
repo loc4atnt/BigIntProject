@@ -1,18 +1,258 @@
 #include "BigIntIO.h"
+#include "../BigInt/BigInt.h"
 #include "../Config.h"
 #include <string.h>
 #include <malloc.h>
 
-bool runCalCmdWithBinaryMode(CmdParam cmdParam, FILE* outFile) {
-	printf("Thuc hien phep toan nek :)\n");
+bool runCalCmd(CmdParam cmdParam, FILE* file) {
+	char *resStr;
+	BigInt res;
+	BigInt n1, n2;
+	if (cmdParam.params[0][0] == '2') {
+		n1 = binStrToBigInt(cmdParam.params[1]);
+		n2 = binStrToBigInt(cmdParam.params[3]);
+	}
+	else {
+		n1 = decStrToBigInt(cmdParam.params[1]);
+		n2 = decStrToBigInt(cmdParam.params[3]);
+	}
+
+	switch (cmdParam.params[2][0]) {
+	case '+':
+		res = n1 + n2;
+		break;
+	case '-':
+		res = n1 - n2;
+		break;
+	case '*':
+		res = n1 * n2;
+		break;
+	case '/':
+		res = n1 / n2;
+		break;
+	case '%':
+		res = n1 % n2;
+		break;
+	}
+
+	resStr = (cmdParam.params[0][0] == '2') ? bigIntToBinStr(&res) : bigIntToDecStr(&res);
+	fprintf(file, "%s\n", resStr);
+	free(resStr);
+	return true;
+}
+
+bool runConvertBigIntBaseCmd(CmdParam cmdParam, FILE* file) {
+	BigInt n;
+	char* resStr;
+	if (cmdParam.params[0][0] == '2') {
+		binStrToBigInt(cmdParam.params[2]);
+		resStr = bigIntToDecStr(&n);
+	}
+	else {
+		decStrToBigInt(cmdParam.params[2]);
+		resStr = bigIntToBinStr(&n);
+	}
+	fprintf(file, "%s\n", resStr);
+	free(resStr);
+	return true;
+}
+
+bool runBitmathCmd(CmdParam cmdParam, FILE* file) {
+	char* resStr;
+	BigInt res;
+	BigInt n1, n2;
+	if (cmdParam.params[0][0] == '2') {
+		n1 = binStrToBigInt(cmdParam.params[1]);
+		n2 = binStrToBigInt(cmdParam.params[3]);
+	}
+	else {
+		n1 = decStrToBigInt(cmdParam.params[1]);
+		n2 = decStrToBigInt(cmdParam.params[3]);
+	}
+
+	switch (cmdParam.params[2][0]) {
+	case '&':
+		res = n1 & n2;
+		break;
+	case '|':
+		res = n1 | n2;
+		break;
+	case '^':
+		res = n1 ^ n2;
+		break;
+	}
+
+	resStr = (cmdParam.params[0][0] == '2') ? bigIntToBinStr(&res) : bigIntToDecStr(&res);
+	fprintf(file, "%s\n", resStr);
+	free(resStr);
+	return true;
+}
+
+bool runNotCmd(CmdParam cmdParam, FILE* file) {
+	BigInt n;
+	char* resStr;
+	if (cmdParam.params[0][0] == '2') {
+		binStrToBigInt(cmdParam.params[2]);
+		n = ~n;
+		resStr = bigIntToDecStr(&n);
+	}
+	else {
+		decStrToBigInt(cmdParam.params[2]);
+		n = ~n;
+		resStr = bigIntToBinStr(&n);
+	}
+	fprintf(file, "%s\n", resStr);
+	free(resStr);
+	return true;
+}
+
+bool runBitMoveCmd(CmdParam cmdParam, FILE* file) {
+	char* resStr;
+	BigInt res;
+	BigInt n1;
+	int32_t movingSteps;
+	if (cmdParam.params[0][0] == '2') {
+		n1 = binStrToBigInt(cmdParam.params[1]);
+		movingSteps = getValue(binStrToBigInt(cmdParam.params[3]));
+	}
+	else {
+		n1 = decStrToBigInt(cmdParam.params[1]);
+		movingSteps = getValue(decStrToBigInt(cmdParam.params[3]));
+	}
+
+	switch (cmdParam.params[2][0]) {
+	case '>':
+		res = n1 >> movingSteps;
+		break;
+	case '<':
+		res = n1 << movingSteps;
+		break;
+	}
+
+	resStr = (cmdParam.params[0][0] == '2') ? bigIntToBinStr(&res) : bigIntToDecStr(&res);
+	fprintf(file, "%s\n", resStr);
+	free(resStr);
+	return true;
+}
+
+bool runMinMaxPowCmd(CmdParam cmdParam, FILE* file) {
+	char* resStr;
+	BigInt res;
+	BigInt n1, n2;
+	if (cmdParam.params[0][0] == '2') {
+		n1 = binStrToBigInt(cmdParam.params[2]);
+		n2 = binStrToBigInt(cmdParam.params[3]);
+	}
+	else {
+		n1 = decStrToBigInt(cmdParam.params[2]);
+		n2 = decStrToBigInt(cmdParam.params[3]);
+	}
+
+	if (strcmp(cmdParam.params[1], "min") == 0) {
+		res = min(n1, n2);
+	}
+	else if (strcmp(cmdParam.params[1], "max") == 0) {
+		res = max(n1, n2);
+	}
+	else {
+		res = pow(n1, n2);
+	}
+
+	resStr = (cmdParam.params[0][0] == '2') ? bigIntToBinStr(&res) : bigIntToDecStr(&res);
+	fprintf(file, "%s\n", resStr);
+	free(resStr);
+	return true;
+}
+
+bool runAbsDigitPrimeToBaseCmd(CmdParam cmdParam, FILE* file) {
+	char* resStr;
+	BigInt res;
+	BigInt n = (cmdParam.params[0][0] == '2') ? binStrToBigInt(cmdParam.params[2]) : decStrToBigInt(cmdParam.params[2]);
+	
+	if (strcmp(cmdParam.params[1], "digits") == 0) {
+		res = assignValue(digits(&n));
+		resStr = bigIntToDecStr(&res);
+		res = BigInt();
+	}
+	else if (strcmp(cmdParam.params[1], "abs") == 0) {
+		res = abs(n);
+	}
+	else if (strcmp(cmdParam.params[1], "is_prime") == 0) {
+		res = BigInt();
+		resStr = boolToString(is_prime(&n));
+	}
+	else if (strcmp(cmdParam.params[1], "to_base32") == 0) {
+		res = BigInt();
+		resStr = to_base32(&n);
+	}
+	else if (strcmp(cmdParam.params[1], "to_base58")==0) {
+		res = BigInt();
+		resStr = to_base58(&n);
+	}
+	else {
+		res = BigInt();
+		resStr = to_base64(&n);
+	}
+
+	if (res.bytes != NULL) {
+		resStr = (cmdParam.params[0][0] == '2') ? bigIntToBinStr(&res) : bigIntToDecStr(&res);
+	}
+	fprintf(file, "%s\n", resStr);
+	free(resStr);
 	return true;
 }
 
 void registerInputCommnands() {
-	registerInputCommnand("2 <> + <>", runCalCmdWithBinaryMode);
-	registerInputCommnand("2 <> - <>", runCalCmdWithBinaryMode);
-	registerInputCommnand("2 <> * <>", runCalCmdWithBinaryMode);
-	registerInputCommnand("2 <> / <>", runCalCmdWithBinaryMode);
+	registerInputCommnand("2 <> + <>", runCalCmd);
+	registerInputCommnand("2 <> - <>", runCalCmd);
+	registerInputCommnand("2 <> * <>", runCalCmd);
+	registerInputCommnand("2 <> / <>", runCalCmd);
+	registerInputCommnand("2 <> % <>", runCalCmd);
+	registerInputCommnand("10 <> + <>", runCalCmd);
+	registerInputCommnand("10 <> - <>", runCalCmd);
+	registerInputCommnand("10 <> * <>", runCalCmd);
+	registerInputCommnand("10 <> / <>", runCalCmd);
+	registerInputCommnand("10 <> % <>", runCalCmd);
+
+	registerInputCommnand("10 2 <>", runConvertBigIntBaseCmd);
+	registerInputCommnand("2 10 <>", runConvertBigIntBaseCmd);
+
+	// & | ^ ~
+	registerInputCommnand("2 <> & <>", runBitmathCmd);
+	registerInputCommnand("2 <> | <>", runBitmathCmd);
+	registerInputCommnand("2 <> ^ <>", runBitmathCmd);
+	registerInputCommnand("2 ~ <>", runNotCmd);
+	registerInputCommnand("10 <> & <>", runBitmathCmd);
+	registerInputCommnand("10 <> | <>", runBitmathCmd);
+	registerInputCommnand("10 <> ^ <>", runBitmathCmd);
+	registerInputCommnand("10 ~ <>", runNotCmd);
+
+	// >> <<
+	registerInputCommnand("2 <> >> <>", runBitMoveCmd);
+	registerInputCommnand("2 <> << <>", runBitMoveCmd);
+	registerInputCommnand("10 <> >> <>", runBitMoveCmd);
+	registerInputCommnand("10 <> << <>", runBitMoveCmd);
+
+	// min max pow
+	registerInputCommnand("2 min <> <>", runMinMaxPowCmd);
+	registerInputCommnand("2 max <> <>", runMinMaxPowCmd);
+	registerInputCommnand("2 pow <> <>", runMinMaxPowCmd);
+	registerInputCommnand("10 min <> <>", runMinMaxPowCmd);
+	registerInputCommnand("10 max <> <>", runMinMaxPowCmd);
+	registerInputCommnand("10 pow <> <>", runMinMaxPowCmd);
+
+	// abs digits to_base32 to_base58 to_base64 is_prime
+	registerInputCommnand("2 digits <>", runAbsDigitPrimeToBaseCmd);
+	registerInputCommnand("2 to_base32 <>", runAbsDigitPrimeToBaseCmd);
+	registerInputCommnand("2 to_base58 <>", runAbsDigitPrimeToBaseCmd);
+	registerInputCommnand("2 to_base64 <>", runAbsDigitPrimeToBaseCmd);
+	registerInputCommnand("2 is_prime <>", runAbsDigitPrimeToBaseCmd);
+	registerInputCommnand("10 abs <>", runAbsDigitPrimeToBaseCmd);
+	registerInputCommnand("10 digits <>", runAbsDigitPrimeToBaseCmd);
+	registerInputCommnand("10 to_base32 <>", runAbsDigitPrimeToBaseCmd);
+	registerInputCommnand("10 to_base58 <>", runAbsDigitPrimeToBaseCmd);
+	registerInputCommnand("10 to_base64 <>", runAbsDigitPrimeToBaseCmd);
+	registerInputCommnand("10 is_prime <>", runAbsDigitPrimeToBaseCmd);
 }
 
 void registerInputCommnand(const char* cmdStruct, CommandFunction cmdFunc) {

@@ -109,24 +109,12 @@ BigInt oppositeNum(BigInt a)
 {
 	if (a == 0) return a;
 	BigInt res = ~(a);
-#ifdef DEBUG
-	printf("oppositeNum - 1: %s\n", bigIntToBinStr(&res));
-	printf("R: %d - %d - %d\n\n", res.isHasSign, res.byteCount, res.bytes[0]);
-#endif
 	res = res + assignValue(1);
-#ifdef DEBUG
-	printf("oppositeNum - 2: %s\n", bigIntToBinStr(&res));
-#endif
 	return res;
 }
 
 BigInt operator-(BigInt a, BigInt b) {
 	BigInt res;
-#ifdef DEBUG
-	BigInt tmp = oppositeNum(b);
-	printf("operator- - 1: %s\n", bigIntToBinStr(&a));
-	printf("operator- - 2: %s\n", bigIntToBinStr(&tmp));
-#endif
 	res = a + oppositeNum(b);
 	return res;
 }
@@ -426,12 +414,7 @@ BigInt AndOrXor(BigInt a, BigInt b, byte(*calFunc)(byte b1, byte b2)) {
 	addSignExcessBytes(&res, sharedByteCount - res.byteCount);
 	addSignExcessBytes(&a, sharedByteCount - a.byteCount);
 	addSignExcessBytes(&b, sharedByteCount - b.byteCount);
-#ifdef DEBUG
-	printf("debugandorxor\n");
-	printf("%s\n", bigIntToBinStr(&res));
-	printf("%s\n", bigIntToBinStr(&a));
-	printf("%s\n", bigIntToBinStr(&b));
-#endif
+
 	for (int i = 0; i < sharedByteCount; i++) {
 		res.bytes[i] = calFunc(a.bytes[i], b.bytes[i]);
 	}
@@ -586,4 +569,15 @@ BigInt pow(BigInt a, BigInt e) {
 		BigInt n = pow(a, e >> 1);
 		return (isOddBigInt(&e) ? n * n * a : n * n);
 	}	
+}
+
+int32_t getValue(BigInt n) {
+	int32_t value = 0;
+	BigInt nAbs = abs(n);
+
+	uint8_t valueBytesCount = nAbs.byteCount > 4 ? 4 : nAbs.byteCount;
+	for (uint8_t i = 0; i < valueBytesCount; i++) {
+		value += nAbs.bytes[i] * ((int32_t)pow(256, i));
+	}
+	return n.isHasSign ? -value : value;
 }

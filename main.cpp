@@ -24,52 +24,14 @@ void runInputCommands(FILE *inF, FILE *ouF) {
 	}
 }
 
-//int test(int a, int b) {
-//	a = -a;
-//
-//	int q = 0;
-//	int c, b_phay;
-//	while (a >= b) {
-//		c = 1;
-//		b_phay = b;
-//		while ((b_phay = (b_phay << 1)) <= a) {
-//			c = c << 1;
-//		}
-//		b_phay = b_phay >> 1;
-//		q = q + c;
-//		printf("%d-%d\n", a, b_phay);
-//		a = a - b_phay;
-//		printf("%d-%d\n", a, b_phay);
-//	}
-//	return -q;
-//}
-//
-//int test2(int a, int b) {
-//	a = -a;
-//
-//	int q = 0;
-//	int c, b_phay;
-//	while (a >= b) {
-//		c = 1;
-//		b_phay = b;
-//		while ((b_phay = (b_phay << 1)) <= a) {
-//			c = c << 1;
-//		}
-//		b_phay = b_phay >> 1;
-//		q = q + c;
-//		printf("%d-%d\n", a, b_phay);
-//		a = a - b_phay;
-//		printf("%d-%d\n", a, b_phay);
-//	}
-//	return -a;
-//}
-
 void main(int argCount, char **args) {
+#ifdef DEBUG
 	BigInt a = assignValue(19);
 	BigInt b = assignValue(3);
-	BigInt c = decStrToBigInt("256");
-	c = pow(c, b);
-	printf("%s\n",bigIntToDecStr(&c));
+	BigInt c = decStrToBigInt("4568");
+	//c = pow(c, b);
+	printf("%d\n",getValue(c));
+	printf("%s\n", bigIntToDecStr(&c));
 	printf("A: %s\n", bigIntToBinStr(&a));
 	printf("B: %s\n", bigIntToBinStr(&b));
 	printf("C: %s\n\n", bigIntToBinStr(&c));	
@@ -77,6 +39,8 @@ void main(int argCount, char **args) {
 	printf("B: %d - %d - %d\n", b.isHasSign, b.byteCount, b.bytes[0]);
 	printf("C: %d - %d - %d\n", c.isHasSign, c.byteCount, c.bytes[0]);
 	return;
+#endif
+
 	if (argCount < 3) {
 		printf("Sai cu phap!\n");
 		printf("Cu phap lenh: 20120020_20120561.exe <input_path> <output_path>\n");
