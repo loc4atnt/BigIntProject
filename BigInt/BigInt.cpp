@@ -246,7 +246,7 @@ char* bigIntToDecStr(BigInt *b)
 	*res = { 0 };
 	if (b->isHasSign == 1) {
 		res[0] = '-';
-		b = &oppositeNum(*b);
+		(*b) = oppositeNum(*b);
 	}
 	res[i] = '\0'; 
 	i--;
