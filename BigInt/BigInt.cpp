@@ -232,8 +232,18 @@ BigInt decStrToBigInt(const char* decStr)
 	short decStrLen = strlen(decStr);
 	num.bytes[0] = decStr[decStrLen - 1] - '0';
 	res = res + num ;
-	for (int i = decStrLen-2; i >= 0 ; i--) {
+	for (int i = decStrLen-2; i > 0 ; i--) {
 		num.bytes[0] = decStr[i] - '0';
+		idx = idx * dec;
+		res = res + num * idx;
+	}
+	if (decStr[0] == '-') {
+		res.isHasSign = 0;
+		res = oppositeNum(res);
+	}
+	else {
+		res.isHasSign = 0;
+		num.bytes[0] = decStr[0] - '0';
 		idx = idx * dec;
 		res = res + num * idx;
 	}
@@ -243,17 +253,15 @@ BigInt decStrToBigInt(const char* decStr)
 char* bigIntToDecStr(BigInt *b)
 {
 	if (b->byteCount == 0) return NULL;
-	byte i = b->byteCount * 24 / 10 + 2;
+	byte i = b->isHasSign?digits(b)+1:digits(b);
 	char* res =  (char*)malloc(i);	
 	*res = { 0 };
-	if (b->isHasSign == 1) {
-		printf("moi khi\n");
-		res[0] = '-';
-		(*b) = oppositeNum(*b);
-	}
-	res[i] = '\0'; 
+	res[i] = '\0';
 	i--;
-	BigInt dec = assignValue(10),z1,z2=(*b);
+	if (b->isHasSign == 1) {
+		res[0] = '-';
+	}	
+	BigInt z1, z2=b->isHasSign?oppositeNum(*b):*b , dec = assignValue(10);
 	do
 	{
 		z1 = z2 % dec;    
@@ -562,9 +570,20 @@ bool operator <= (BigInt a, BigInt b) {
 }
 
 uint16_t digits(BigInt *i) {
-	return 0;
+	uint16_t cnt = 0;
+	BigInt tmp =i->isHasSign?oppositeNum(*i):(*i), dec = assignValue(10);
+	while (tmp > 0) {
+		cnt++;
+		tmp = tmp / dec;
+	}
+	return cnt;
 }
 
 BigInt pow(BigInt a, BigInt e) {
-	return BigInt();
+	if (e == 0) return assignValue(1);
+	else if (e == 1) return a;
+	else {
+		BigInt n = pow(a, e >> 1);
+		return (isOddBigInt(&e) ? n * n * a : n * n);
+	}	
 }
