@@ -65,9 +65,9 @@ void runInputCommands(FILE *inF, FILE *ouF) {
 //}
 
 void main(int argCount, char **args) {
-	BigInt a = assignValue(4);
-	BigInt b = assignValue(-8);
-	BigInt c = a + b;
+	BigInt a = assignValue(10);
+	BigInt b = assignValue(3);
+	BigInt c = a / b;
 	//printf("%d\n", a == b);//decStrToBigInt//bigIntToDecStr
 	printf("A: %s\n", bigIntToBinStr(&a));
 	printf("B: %s\n", bigIntToBinStr(&b));

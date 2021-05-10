@@ -3,7 +3,7 @@
 #include <string.h>
 #include <math.h>
 
-BigInt binStrToBigInt(const char* binStr) {
+BigInt binStrToBigInt(const char* binStr, bool isHasSign) {
 	BigInt bigI;
 	uint16_t bitLen = strlen(binStr);
 
@@ -25,6 +25,8 @@ BigInt binStrToBigInt(const char* binStr) {
 		tmpByte = binStrToByte(tmpBinStr);
 		addByteToBigInt(&bigI, tmpByte);
 	} while (i>0);
+
+	if (isHasSign) { bigI.isHasSign = isHasSign; }
 
 	free(tmpBinStr);
 	return bigI;
@@ -159,7 +161,7 @@ void swap(BigInt* a, BigInt* b) {
 
 BigInt operator * (BigInt a, BigInt b) {
 	BigInt res = assignValue(0);
-	bool isResNegative = (a.isHasSign == b.isHasSign);//a, b cung dau thi res duong, khac dau thi res am
+	bool isResNegative = (a.isHasSign != b.isHasSign);//a, b cung dau thi res duong, khac dau thi res am
 	a = abs(a);
 	b = abs(b);
 	if (a < b) { // So hang thu 2 nen la so hang nho hon
@@ -181,7 +183,7 @@ BigInt operator / (BigInt a, BigInt b) {
 	if (b == 0) return BigInt();
 
 	BigInt q = assignValue(0);
-	bool isResNegative = (a.isHasSign == b.isHasSign);//a, b cung dau thi res duong, khac dau thi res am
+	bool isResNegative = (a.isHasSign != b.isHasSign);//a, b cung dau thi res duong, khac dau thi res am
 	a = abs(a);
 	b = abs(b);
 
@@ -206,7 +208,7 @@ BigInt operator % (BigInt a, BigInt b) {
 	if (b == 0) return BigInt();
 	
 	BigInt q = assignValue(0);
-	bool isResNegative = (a.isHasSign == b.isHasSign);//a, b cung dau thi res duong, khac dau thi res am
+	bool isResNegative = (a.isHasSign != b.isHasSign);//a, b cung dau thi res duong, khac dau thi res am
 	a = abs(a);
 	b = abs(b);
 
@@ -250,6 +252,7 @@ char* bigIntToDecStr(BigInt *b)
 	char* res =  (char*)malloc(i);	
 	i = { 0 };
 	if (b->isHasSign == 1) {
+		printf("moi khi\n");
 		res[0] = '-';
 		(*b) = oppositeNum(*b);
 	}
@@ -559,4 +562,12 @@ bool operator >= (BigInt a, BigInt b) {
 
 bool operator <= (BigInt a, BigInt b) {
 	return (a == b) || (a < b);
+}
+
+uint16_t digits(BigInt *i) {
+	return 0;
+}
+
+BigInt pow(BigInt a, BigInt e) {
+	return BigInt();
 }

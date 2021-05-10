@@ -38,7 +38,7 @@ struct BigInt {
 	}
 };
 
-BigInt binStrToBigInt(const char* binStr);
+BigInt binStrToBigInt(const char* binStr, bool isHasSign = false);
 char* bigIntToBinStr(BigInt *b);
 void addByteToBigInt(BigInt* bigInt, byte b);
 void fillLastByteWithSignExcess(BigInt* i);
@@ -89,5 +89,12 @@ uint16_t getBitLen(BigInt* bigInt);
 BigInt abs(BigInt i);
 BigInt min(BigInt a, BigInt b);
 BigInt max(BigInt a, BigInt b);
+uint16_t digits(BigInt *i);
+BigInt pow(BigInt a, BigInt e);
+char* to_string(BigInt* i);
+char* to_base32(BigInt* i);
+char* to_base58(BigInt* i);
+char* to_base64(BigInt* i);
+bool is_prime(BigInt* i);
 
 #endif

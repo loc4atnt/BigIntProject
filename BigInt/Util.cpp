@@ -56,3 +56,15 @@ byte OrByte(byte b1, byte b2) {
 byte XorByte(byte b1, byte b2) {
 	return (b1 ^ b2);
 }
+
+char valueToBase32Char(uint8_t val) {
+	return BASE32_ALPHABET[val];
+}
+
+char valueToBase64Char(uint8_t val) {
+	return BASE64_ALPHABET[val];
+}
+
+char valueToBase58Char(uint8_t val) {
+	return BASE58_ALPHABET[val];
+}
