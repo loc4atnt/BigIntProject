@@ -65,12 +65,10 @@ BigInt operator+(BigInt a, BigInt b)
 	}
 	else res.byteCount = maxByte;
 	res.bytes = (byte*)malloc(res.byteCount);	
-	BigInt* p = &a;
-	fillLastByteWithSignExcess(p);
-	p = &b;
-	fillLastByteWithSignExcess(p);
+	fillLastByteWithSignExcess(&a);
+	fillLastByteWithSignExcess(&b);
 	if (a.byteCount != b.byteCount) {
-		p = (a.byteCount > b.byteCount) ? &b : &a;
+		BigInt* p = (a.byteCount > b.byteCount) ? &b : &a;
 		addSignExcessBytes(p, (byte)fabs(a.byteCount - b.byteCount));
 	}	
 	res.bytes[0] = a.bytes[0] + b.bytes[0];
@@ -81,30 +79,27 @@ BigInt operator+(BigInt a, BigInt b)
 		if ((a.bytes[i] + b.bytes[i] + (bitOverflow ? 1 : 0)) > 255)  bitOverflow = 1;
 		else bitOverflow = 0;
 	}
-	p = &res;
 	if (a.isHasSign == b.isHasSign) {
 		res.isHasSign = a.isHasSign;
 		
 		if (bitOverflow) {
 			res.bytes[res.byteCount - 1] = 1;
-			fillLastByteWithSignExcess(p);
-			reduceSignExcessBytes(p);
+			fillLastByteWithSignExcess(&res);
 		}
-		else removeLastByteFromBigInt(p);
+		else removeLastByteFromBigInt(&res);
 	}	
 	else {
 		if (a.byteCount == b.byteCount) {
 			res.isHasSign = (!bitOverflow) ? 1 : 0;
 		}
 		else {
-			p = (a.byteCount > b.byteCount) ? &a : &b;
+			BigInt* p = (a.byteCount > b.byteCount) ? &a : &b;
 			res.isHasSign = p->isHasSign;
 		}
 	}
-	p = &a;
-	reduceSignExcessBytes(p);
-	p = &b;
-	reduceSignExcessBytes(p);
+	reduceSignExcessBytes(&res);
+	reduceSignExcessBytes(&a);
+	reduceSignExcessBytes(&b);
 	return res;
 }
 
@@ -245,13 +240,16 @@ BigInt decStrToBigInt(const char* decStr)
 
 char* bigIntToDecStr(BigInt *b)
 {
+	if (b->byteCount == 0) return NULL;
 	byte i = b->byteCount * 24 / 10 + 2;
 	char* res =  (char*)malloc(i);	
-	i = { 0 };
+	*res = { 0 };
 	if (b->isHasSign == 1) {
 		res[0] = '-';
 		b = &oppositeNum(*b);
 	}
+	res[i] = '\0'; 
+	i--;
 	BigInt dec = assignValue(10),z1,z2=(*b);
 	do
 	{
@@ -316,6 +314,7 @@ void reduceSignExcessBytes(BigInt* i) {
 		&& (readBit(i->bytes[i->byteCount - 2], 7) == i->isHasSign) ) {
 		removeLastByteFromBigInt(i);
 	}
+	reduceSignExcessFromLastByte(i);
 }
 
 BigInt operator ~ (BigInt a) {
