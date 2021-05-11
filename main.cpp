@@ -1,6 +1,7 @@
 #include "Config.h"
 #include <stdio.h>
 #include <string.h>
+#include <time.h>
 #include "BigIntIO/BigIntIO.h"
 #include "BigInt/BigInt.h"
 
@@ -26,14 +27,25 @@ void runInputCommands(FILE *inF, FILE *ouF) {
 
 void main(int argCount, char **args) {
 #ifdef DEBUG
+	clock_t start, end;
 	//BigInt i = binStrToBigInt("010011010110111101101000010000110111010101100100");//duChoM
-	BigInt i = assignValue(122);
-	printf("%s\n", to_base64(i));
+	BigInt i = decStrToBigInt("3513");
+	BigInt e = assignValue(4);
+	printf_s("%s\n", bigIntToDecStr(&pow(i, e)));
+
+	start = clock();
+	
+	printf("%d\n", digits(&i));
 	printf("%s\n", bigIntToDecStr(&i));
+	
+	end = clock();
+	printf_s("Time used: %f", (double)(end - start) / CLOCKS_PER_SEC);
+
+	
 	return;
 	BigInt a = assignValue(19);
 	BigInt b = assignValue(3);
-	BigInt c = decStrToBigInt("4568");
+	BigInt c = decStrToBigInt("300000000000000000");
 	//c = pow(c, b);
 	printf("%d\n",getValue(c));
 	printf("%s\n", bigIntToDecStr(&c));

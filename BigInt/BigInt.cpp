@@ -214,49 +214,45 @@ BigInt operator % (BigInt a, BigInt b) {
 BigInt decStrToBigInt(const char* decStr)
 {
 	BigInt res = assignValue(0);
+	short decStrLen = strlen(decStr);
+	if (decStrLen == 0) return res;
 	BigInt dec = assignValue(10);
 	BigInt idx = assignValue(1);
 	BigInt num = assignValue(0);
-	short decStrLen = strlen(decStr);
-	num.bytes[0] = decStr[decStrLen - 1] - '0';
-	res = res + num ;
-	for (int i = decStrLen-2; i > 0 ; i--) {
+	for (int i = decStrLen-1; i > 0 ; i--) {
 		num.bytes[0] = decStr[i] - '0';
-		idx = idx * dec;
 		res = res + num * idx;
+		idx = idx * dec;
 	}
+	res.isHasSign = 0;
 	if (decStr[0] == '-') {
-		res.isHasSign = 0;
 		res = oppositeNum(res);
 	}
 	else {
-		res.isHasSign = 0;
 		num.bytes[0] = decStr[0] - '0';
-		idx = idx * dec;
 		res = res + num * idx;
 	}
 	return res;
 }
 
-char* bigIntToDecStr(BigInt *b)
+char* bigIntToDecStr(BigInt* b)
 {
 	if (b->byteCount == 0) return NULL;
-	byte i = b->isHasSign?digits(b)+1:digits(b);
-	char* res =  (char*)malloc(i);	
-	*res = { 0 };
-	res[i] = '\0';
-	i--;
-	if (b->isHasSign == 1) {
-		res[0] = '-';
-	}	
-	BigInt z1, z2=b->isHasSign?oppositeNum(*b):*b , dec = assignValue(10);
+	char* res = (char*)malloc(1);
+	res[0] = '\0';
+	int resLen = strlen(res);
+	BigInt num;
+	BigInt tmpB = b->isHasSign ? oppositeNum(*b) : *b;
+	BigInt dec = assignValue(10);
 	do
 	{
-		z1 = z2 % dec;    
-		z2 = z2 / dec; 
-		res[i] = z1.bytes[0] + '0';
-		i--;
-	} while (z2 != 0);	
+		num = tmpB % dec;
+		tmpB = tmpB / dec;
+		insertCharFrontStr(&res, &resLen, valueToBase10Char(getValue(num)));
+	} while (tmpB != 0);
+	if (b->isHasSign == 1) {
+		insertCharFrontStr(&res, &resLen, '-');
+	}
 	return res;
 }
 
@@ -553,9 +549,10 @@ bool operator <= (BigInt a, BigInt b) {
 }
 
 uint16_t digits(BigInt *i) {
+	if (*i == 0) return 1;
 	uint16_t cnt = 0;
-	BigInt tmp =i->isHasSign?oppositeNum(*i):(*i), dec = assignValue(10);
-	while (tmp > 0) {
+	BigInt tmp =(*i), dec = assignValue(10);
+	while (tmp != 0) {
 		cnt++;
 		tmp = tmp / dec;
 	}

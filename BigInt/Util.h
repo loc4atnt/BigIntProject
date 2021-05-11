@@ -15,6 +15,7 @@ static byte BYTE_MASK[8] = { 0b00000001,
 							 0b10000000 };
 
 #define PADDING_BASE '='
+static char BASE10_ALPHABET[] = "0123456789";
 static char BASE32_ALPHABET[] = "0123456789ABCDEFGHIJKLMNOPQRSTUV";// 5BYTE 8 KY TU// TOI DA 7 PADDING =
 static char BASE58_ALPHABET[] = "123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz";// KHONG PADDING
 static char BASE64_ALPHABET[] = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";// 3BYTE 4 KY TU// TOI DA 2 PADDING =
@@ -28,6 +29,7 @@ uint16_t min(uint16_t a, uint16_t b);
 byte AndByte(byte b1, byte b2);
 byte OrByte(byte b1, byte b2);
 byte XorByte(byte b1, byte b2);
+char valueToBase10Char(uint8_t val);
 char valueToBase32Char(uint8_t val);
 char valueToBase64Char(uint8_t val);
 char valueToBase58Char(uint8_t val);

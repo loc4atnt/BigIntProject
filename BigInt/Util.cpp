@@ -58,6 +58,9 @@ byte XorByte(byte b1, byte b2) {
 	return (b1 ^ b2);
 }
 
+char valueToBase10Char(uint8_t val) {
+	return BASE10_ALPHABET[val];
+}
 char valueToBase32Char(uint8_t val) {
 	return BASE32_ALPHABET[val];
 }
