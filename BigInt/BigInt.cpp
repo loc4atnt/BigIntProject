@@ -581,3 +581,76 @@ int32_t getValue(BigInt n) {
 	}
 	return n.isHasSign ? -value : value;
 }
+
+char* to_string(BigInt* i) {
+	return bigIntToDecStr(i);
+}
+
+char* to_base32Or64(BigInt *i, int8_t byteRoundingAmount, int8_t patternBitLen, char (*valueToBase)(uint8_t val)) {
+	i->isHasSign = false;
+
+	char* baseStr = (char*)malloc(1); baseStr[0] = '\0';
+	int baseStrLen = 0;
+	uint8_t paddingByteAmount = (byteRoundingAmount - (i->byteCount % byteRoundingAmount)) % byteRoundingAmount;
+	addSignExcessBytes(i, paddingByteAmount);
+
+	bool isAddPadding = true;
+	uint8_t bitIdxOfEncPattern = 0;
+	byte encPattern = 0;
+	for (int k = i->byteCount - 1; k >= 0; k--) {
+		for (int j = 0; j < 8; j++) {
+			setBit(&encPattern, bitIdxOfEncPattern, readBit(i->bytes[k], j));
+			if (bitIdxOfEncPattern == (patternBitLen-1)) {
+				if (isAddPadding) {
+					if (encPattern == 0) {
+						insertCharFrontStr(&baseStr, &baseStrLen, PADDING_BASE);
+					}
+					else {
+						isAddPadding = false;
+						insertCharFrontStr(&baseStr, &baseStrLen, valueToBase(encPattern));
+					}
+				}
+				else {
+					insertCharFrontStr(&baseStr, &baseStrLen, valueToBase(encPattern));
+				}
+				bitIdxOfEncPattern = 0;
+				encPattern = 0;
+			}
+			else {
+				bitIdxOfEncPattern++;
+			}
+		}
+	}
+
+	return baseStr;
+}
+
+char* to_base32(BigInt i) {
+	return to_base32Or64(&i, 5, 5, valueToBase32Char);
+}
+
+char* to_base64(BigInt i) {
+	return to_base32Or64(&i, 3, 6, valueToBase64Char);
+}
+
+char* to_base58(BigInt i) {
+	i.isHasSign = false;
+
+	BigInt baseNum = assignValue(58);
+	BigInt r;
+	char* base58Str = (char*)malloc(1); base58Str[0] = '\0';
+	int base58StrLen = 0;
+
+	do {
+		r = i % baseNum;
+		i = i / baseNum;
+		insertCharFrontStr(&base58Str, &base58StrLen, valueToBase58Char(getValue(r)));
+	} while (i > 0);
+
+	return base58Str;
+}
+
+bool is_prime(BigInt i) {
+	if (i < 2) return false;
+	return true;
+}

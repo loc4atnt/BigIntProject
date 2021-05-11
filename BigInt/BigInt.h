@@ -92,9 +92,10 @@ BigInt max(BigInt a, BigInt b);
 uint16_t digits(BigInt *i);
 BigInt pow(BigInt a, BigInt e);
 char* to_string(BigInt* i);
-char* to_base32(BigInt* i);
-char* to_base58(BigInt* i);
-char* to_base64(BigInt* i);
-bool is_prime(BigInt* i);
+char* to_base58(BigInt i);
+char* to_base32Or64(BigInt *i, int8_t byteRoundingAmount, int8_t patternBitLen, char (*valueToBase)(uint8_t val));
+char* to_base32(BigInt i);
+char* to_base64(BigInt i);
+bool is_prime(BigInt i);
 
 #endif

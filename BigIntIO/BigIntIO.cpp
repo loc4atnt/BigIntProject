@@ -165,41 +165,37 @@ bool runMinMaxPowCmd(CmdParam cmdParam, FILE* file) {
 }
 
 bool runAbsDigitPrimeToBaseCmd(CmdParam cmdParam, FILE* file) {
-	char* resStr;
+	char* resStr = NULL;
 	BigInt res;
 	BigInt n = (cmdParam.params[0][0] == '2') ? binStrToBigInt(cmdParam.params[2]) : decStrToBigInt(cmdParam.params[2]);
 	
 	if (strcmp(cmdParam.params[1], "digits") == 0) {
 		res = assignValue(digits(&n));
 		resStr = bigIntToDecStr(&res);
-		res = BigInt();
 	}
 	else if (strcmp(cmdParam.params[1], "abs") == 0) {
 		res = abs(n);
-	}
-	else if (strcmp(cmdParam.params[1], "is_prime") == 0) {
-		res = BigInt();
-		resStr = boolToString(is_prime(&n));
-	}
-	else if (strcmp(cmdParam.params[1], "to_base32") == 0) {
-		res = BigInt();
-		resStr = to_base32(&n);
-	}
-	else if (strcmp(cmdParam.params[1], "to_base58")==0) {
-		res = BigInt();
-		resStr = to_base58(&n);
-	}
-	else {
-		res = BigInt();
-		resStr = to_base64(&n);
-	}
-
-	if (res.bytes != NULL) {
 		resStr = (cmdParam.params[0][0] == '2') ? bigIntToBinStr(&res) : bigIntToDecStr(&res);
 	}
-	fprintf(file, "%s\n", resStr);
-	free(resStr);
-	return true;
+	else if (strcmp(cmdParam.params[1], "is_prime") == 0) {
+		resStr = boolToString(is_prime(n));
+	}
+	else if (strcmp(cmdParam.params[1], "to_base32") == 0) {
+		resStr = to_base32(n);
+	}
+	else if (strcmp(cmdParam.params[1], "to_base58")==0) {
+		resStr = to_base58(n);
+	}
+	else {
+		resStr = to_base64(n);
+	}
+
+	if (resStr != NULL) {
+		fprintf(file, "%s\n", resStr);
+		free(resStr);
+		return true;
+	}
+	return false;
 }
 
 void registerInputCommnands() {

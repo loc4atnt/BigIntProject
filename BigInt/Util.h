@@ -31,5 +31,7 @@ byte XorByte(byte b1, byte b2);
 char valueToBase32Char(uint8_t val);
 char valueToBase64Char(uint8_t val);
 char valueToBase58Char(uint8_t val);
+char* boolToString(bool b);
+void insertCharFrontStr(char** str, int* strLen, char chr);
 
 #endif

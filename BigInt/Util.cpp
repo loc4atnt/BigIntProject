@@ -2,6 +2,7 @@
 
 #include <malloc.h>
 #include <string.h>
+#include <stdio.h>
 
 byte binStrToByte(const char* binStr) {
 	byte b = 0;
@@ -67,4 +68,17 @@ char valueToBase64Char(uint8_t val) {
 
 char valueToBase58Char(uint8_t val) {
 	return BASE58_ALPHABET[val];
+}
+
+char* boolToString(bool b) {
+	char* str = (char*)malloc(6);//true/false
+	strcpy_s(str, 6, b ? "true" : "false");
+	return str;
+}
+
+void insertCharFrontStr(char** str, int *strLen, char chr) {
+	(*strLen)++;
+	(*str) = (char*)realloc((*str), (*strLen)+1);
+	memcpy_s((*str) +1, (*strLen), (*str), (*strLen));
+	(*str)[0] = chr;
 }
