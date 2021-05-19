@@ -634,6 +634,7 @@ void divAndMod(BigInt a, BigInt b, BigInt *qRes, BigInt *rRes) {
 }
 
 char* to_base10(BigInt *n) {
+	bool sign = n->isHasSign;
 	BigInt i = abs(*n);
 
 	BigInt baseNum = assignValue(10);
@@ -645,6 +646,9 @@ char* to_base10(BigInt *n) {
 		divAndMod(i, baseNum, &i, &r);
 		insertCharFrontStr(&base10Str, &base10StrLen, '0'+getValue(r));
 	} while (i > 0);
+	if (sign == 1) {
+		insertCharFrontStr(&base10Str, &base10StrLen, '-');
+	}
 
 	return base10Str;
 }
