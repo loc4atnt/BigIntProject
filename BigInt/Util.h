@@ -2,6 +2,7 @@
 #define _Util_H_
 
 #include <stdint.h>
+#include <time.h>
 
 typedef unsigned char byte;
 
@@ -18,6 +19,11 @@ static byte BYTE_MASK[8] = { 0b00000001,
 static char BASE32_ALPHABET[] = "0123456789ABCDEFGHIJKLMNOPQRSTUV";// 5BYTE 8 KY TU// TOI DA 7 PADDING =
 static char BASE58_ALPHABET[] = "123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz";// KHONG PADDING
 static char BASE64_ALPHABET[] = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";// 3BYTE 4 KY TU// TOI DA 2 PADDING =
+
+static clock_t lastTime;
+
+void resetDebugTime();
+void debugTime(const char*label = "");
 
 byte binStrToByte(const char* binStr);
 char* byteToBinStr(byte b, bool isDispayFullBit = false);

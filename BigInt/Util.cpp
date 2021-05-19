@@ -82,3 +82,12 @@ void insertCharFrontStr(char** str, int *strLen, char chr) {
 	memcpy_s((*str) +1, (*strLen), (*str), (*strLen));
 	(*str)[0] = chr;
 }
+
+void resetDebugTime() {
+	lastTime = clock();
+}
+
+void debugTime(const char* label) {
+	double mili = (double)(clock() - lastTime) / CLOCKS_PER_SEC * 1000;
+	printf("Debug time (%s): %.3f\n", label, mili);
+}

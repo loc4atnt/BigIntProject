@@ -1,50 +1,54 @@
-#include "Config.h"
 #include <stdio.h>
 #include <string.h>
 #include "BigIntIO/BigIntIO.h"
 #include "BigInt/BigInt.h"
 
-#define RUNNING_CMD_BUFFER_LEN 200
+#include <time.h>
 
-void runInputCommands(FILE *inF, FILE *ouF) {
+#define RUNNING_CMD_BUFFER_LEN 500
+
+void runInputCommands(FILE *inF, const char *outPath) {
+	remove(outPath);
+
+	FILE* ouF;
 	char buff[RUNNING_CMD_BUFFER_LEN];
 	while (fgets(buff, RUNNING_CMD_BUFFER_LEN, inF)!=NULL) {
 		buff[strcspn(buff, "\n")] = '\0';
 
-#ifdef DEBUG
-		printf("=> %s\n", buff);
-#endif
+		fopen_s(&ouF, outPath, "a");
+		// printf("=> %s\n", buff);
 
 		if (!runInputCommand(ouF, buff)) {
 			printf("x | Lenh \"%s\" khong hop le!\n", buff);
+			fprintf(ouF, "x | Lenh khong hop le!\n");
 		}
 		else {
 			printf("+ | Lenh \"%s\" thuc hien xong!\n", buff);
 		}
+
+		fclose(ouF);
 	}
 }
 
 void main(int argCount, char **args) {
-#ifdef DEBUG
-	//BigInt i = binStrToBigInt("010011010110111101101000010000110111010101100100");//duChoM
-	BigInt i = assignValue(122);
-	printf("%s\n", to_base64(i));
-	printf("%s\n", bigIntToDecStr(&i));
+	// -9485571363021587 * 24689531702694
+	BigInt a = decStrToBigInt("-9485571363021587");
+	BigInt b = decStrToBigInt("24689531702694");
+	BigInt c = a * b;
+	char* str = to_base10(&a);
+	printf("%s\n", str);
+	free(str);
 	return;
-	BigInt a = assignValue(19);
-	BigInt b = assignValue(3);
-	BigInt c = decStrToBigInt("4568");
-	//c = pow(c, b);
-	printf("%d\n",getValue(c));
-	printf("%s\n", bigIntToDecStr(&c));
-	printf("A: %s\n", bigIntToBinStr(&a));
-	printf("B: %s\n", bigIntToBinStr(&b));
-	printf("C: %s\n\n", bigIntToBinStr(&c));	
-	printf("A: %d - %d - %d\n", a.isHasSign, a.byteCount, a.bytes[0]);
-	printf("B: %d - %d - %d\n", b.isHasSign, b.byteCount, b.bytes[0]);
-	printf("C: %d - %d - %d\n", c.isHasSign, c.byteCount, c.bytes[0]);
-	return;
-#endif
+
+	//resetDebugTime();
+	//BigInt a = decStrToBigInt("235463381314039523573896854894651656220931");
+	//debugTime("a");
+	//resetDebugTime();
+	//char* str = to_base10(&a);
+	//debugTime("str");
+	//printf("%s", str);
+	//free(str);
+	//return;
 
 	if (argCount < 3) {
 		printf("Sai cu phap!\n");
@@ -53,12 +57,10 @@ void main(int argCount, char **args) {
 	}
 
 	FILE* inpFile = NULL;
-	FILE* outFile = NULL;
 
 	fopen_s(&inpFile, args[1], "r");
-	fopen_s(&outFile, args[2], "w");
 
-	if ((!inpFile) || (!outFile)) {
+	if ((!inpFile)) {
 		printf("Duong dan File khong ton tai!\n");
 		return;
 	}
@@ -70,12 +72,11 @@ void main(int argCount, char **args) {
 	printf("----- Dang ky lenh input thanh cong -----\n");
 
 	printf("\nChay lenh tu file %s.....\n", args[1]);
-	runInputCommands(inpFile, outFile);
+	runInputCommands(inpFile, args[2]);
 	printf("----- Chay lenh thanh cong -----\n");
 
 	printf("\nDong file, giai phong bo nho.....\n");
 	fclose(inpFile);
-	fclose(outFile);
 	freeCommandList();
 	printf("----- Chuong trinh da ket thuc, xem ket qua tai %s -----\n", args[2]);
 }

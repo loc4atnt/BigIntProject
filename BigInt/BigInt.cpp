@@ -162,53 +162,15 @@ BigInt operator * (BigInt a, BigInt b) {
 }
 
 BigInt operator / (BigInt a, BigInt b) {
-	if (b == 0) return BigInt();
-
-	BigInt q = assignValue(0);
-	bool isResNegative = (a.isHasSign != b.isHasSign);//a, b cung dau thi res duong, khac dau thi res am
-	a = abs(a);
-	b = abs(b);
-
-	BigInt componentQ;
-	BigInt tmpB;
-	while (a >= b) {
-		componentQ = assignValue(1);
-		tmpB = b;
-		while ((tmpB = (tmpB << 1)) <= a) {
-			componentQ = componentQ << 1;
-		}
-		tmpB = tmpB >> 1;// tra lai 1 lan dich bit khien dieu kien cua while tren sai
-		q = q + componentQ;
-		a = a - tmpB;
-	}
-
-	if (isResNegative) return oppositeNum(q);
-	return q;
+	BigInt res;
+	divAndMod(a, b, &res, NULL);
+	return res;
 }
 
 BigInt operator % (BigInt a, BigInt b) {
-	if (b == 0) return BigInt();
-	
-	BigInt q = assignValue(0);
-	bool isResNegative = (a.isHasSign != b.isHasSign);//a, b cung dau thi res duong, khac dau thi res am
-	a = abs(a);
-	b = abs(b);
-
-	BigInt componentQ;
-	BigInt tmpB;
-	while (a >= b) {
-		componentQ = assignValue(1);
-		tmpB = b;
-		while ((tmpB = (tmpB << 1)) <= a) {
-			componentQ = componentQ << 1;
-		}
-		tmpB = tmpB >> 1;// tra lai 1 lan dich bit khien dieu kien cua while tren sai
-		q = q + componentQ;
-		a = a - tmpB;
-	}
-
-	if (isResNegative) return oppositeNum(a);
-	return a;
+	BigInt res;
+	divAndMod(a, b, NULL, &res);
+	return res;
 }
 
 BigInt decStrToBigInt(const char* decStr)
@@ -240,24 +202,7 @@ BigInt decStrToBigInt(const char* decStr)
 
 char* bigIntToDecStr(BigInt *b)
 {
-	if (b->byteCount == 0) return NULL;
-	byte i = b->isHasSign?digits(b)+1:digits(b);
-	char* res =  (char*)malloc(i);	
-	*res = { 0 };
-	res[i] = '\0';
-	i--;
-	if (b->isHasSign == 1) {
-		res[0] = '-';
-	}	
-	BigInt z1, z2=b->isHasSign?oppositeNum(*b):*b , dec = assignValue(10);
-	do
-	{
-		z1 = z2 % dec;    
-		z2 = z2 / dec; 
-		res[i] = z1.bytes[0] + '0';
-		i--;
-	} while (z2 != 0);	
-	return res;
+	return to_base10(b);
 }
 
 void fillLastByteWithSignExcess(BigInt* i) {
@@ -563,12 +508,22 @@ uint16_t digits(BigInt *i) {
 }
 
 BigInt pow(BigInt a, BigInt e) {
+	static uint32_t count = 0;
+	printf("%d\n", count);
+	count++;
 	if (e == 0) return assignValue(1);
 	else if (e == 1) return a;
 	else {
+		printf("H\n");
 		BigInt n = pow(a, e >> 1);
+		printf("G\n");
+		char* str = bigIntToDecStr(&n);
+		printf("%s\n", str);
+		free(str);
+		n* n;
+		printf("E\n");
 		return (isOddBigInt(&e) ? n * n * a : n * n);
-	}	
+	}
 }
 
 int32_t getValue(BigInt n) {
@@ -642,15 +597,103 @@ char* to_base58(BigInt i) {
 	int base58StrLen = 0;
 
 	do {
-		r = i % baseNum;
-		i = i / baseNum;
+		divAndMod(i, baseNum, &i, &r);
 		insertCharFrontStr(&base58Str, &base58StrLen, valueToBase58Char(getValue(r)));
 	} while (i > 0);
 
 	return base58Str;
 }
 
-bool is_prime(BigInt i) {
-	if (i < 2) return false;
+void divAndMod(BigInt a, BigInt b, BigInt *qRes, BigInt *rRes) {
+	if (b == 0) return;
+
+	BigInt q = assignValue(0);
+	bool isResNegative = (a.isHasSign != b.isHasSign);//a, b cung dau thi res duong, khac dau thi res am
+	b = abs(b);
+	a = abs(a);
+
+	int32_t deltaBitLen;
+	int32_t bBitLen = getBitLen(&b);
+	while ((deltaBitLen = (getBitLen(&a) - bBitLen)) > 1) {
+		deltaBitLen -= 1;
+		q = q + (assignValue(1) << deltaBitLen);
+		a = a - (b << deltaBitLen);
+	}
+
+	while (a >= b) {
+		q = q + assignValue(1);
+		a = a - b;
+	}
+
+	if (isResNegative) {
+		if (qRes) (*qRes) = oppositeNum(q);
+		if (rRes) (*rRes) = oppositeNum(a);
+	}
+	else {
+		if (qRes) (*qRes) = q;
+		if (rRes) (*rRes) = a;
+	}
+}
+
+char* to_base10(BigInt *n) {
+	BigInt i = abs(*n);
+
+	BigInt baseNum = assignValue(10);
+	BigInt r;
+	char* base10Str = (char*)malloc(1); base10Str[0] = '\0';
+	int base10StrLen = 0;
+
+	do {
+		divAndMod(i, baseNum, &i, &r);
+		insertCharFrontStr(&base10Str, &base10StrLen, '0'+getValue(r));
+	} while (i > 0);
+
+	return base10Str;
+}
+
+//////////
+void primeDecomposeNum(BigInt n, int32_t *s, BigInt *d) {// n = (2^s)*d
+	(*s) = 0;
+	while (readBit(&n, 0) == 0) {
+		(*s)++;
+		n = n >> 1;
+	}
+	*d = n;
+}
+
+BigInt powOf2With(int32_t s) {
+	if (s < 0) return BigInt();
+	return (assignValue(1) << s);
+}
+
+bool checkSecondConditionOfComposite(BigInt aPowD, int32_t s, BigInt n) {
+	BigInt _n = (n - assignValue(1));
+	BigInt tmp;
+	if (s < 0) s = 0;
+	while (s >= 0) {
+		tmp = pow(aPowD, powOf2With(s));
+		if ((tmp % n) == _n) return false;
+		s--;
+	}
+	return true;
+}
+
+bool is_prime(BigInt n) {
+	if (n.isHasSign || n < 2 || readBit(&n, 0) == 0) return false;
+	if (n == 2 || n == 3 || n == 5) return true;
+
+	int32_t s;
+	BigInt d;
+	BigInt aPowD;
+	BigInt a;
+	primeDecomposeNum(n - assignValue(1), &s, &d);
+
+	for (int i = 0; i < 3; i++) {
+		a = assignValue(PRIME_CHECKING_A[i]);
+		if (a >= n) break;
+		aPowD = pow(a, d);
+		if ((aPowD % n) != 1 && checkSecondConditionOfComposite(aPowD, s - 1, n)) return false;
+	}
+
 	return true;
 }

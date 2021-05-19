@@ -6,7 +6,6 @@
 #include <stdio.h>
 #include <malloc.h>
 #include <string.h>
-#include "../Config.h"
 
 struct BigInt {
 	byte* bytes;
@@ -61,6 +60,8 @@ BigInt operator * (BigInt a, BigInt b);
 BigInt operator / (BigInt a, BigInt b);
 BigInt operator % (BigInt a, BigInt b);
 
+void divAndMod(BigInt a, BigInt b, BigInt* qRes, BigInt* rRes);
+
 BigInt AndOrXor(BigInt a, BigInt b, byte (*calFunc)(byte b1, byte b2));
 BigInt operator ~ (BigInt a);
 BigInt operator & (BigInt a, BigInt b);
@@ -93,9 +94,15 @@ uint16_t digits(BigInt *i);
 BigInt pow(BigInt a, BigInt e);
 char* to_string(BigInt* i);
 char* to_base58(BigInt i);
+char* to_base10(BigInt *i);
 char* to_base32Or64(BigInt *i, int8_t byteRoundingAmount, int8_t patternBitLen, char (*valueToBase)(uint8_t val));
 char* to_base32(BigInt i);
 char* to_base64(BigInt i);
+
+static int PRIME_CHECKING_A[3] = { 2,7,61 };
+void primeDecomposeNum(BigInt n, int32_t* s, BigInt* d);
+BigInt powOf2With(int32_t s);
+bool checkSecondConditionOfComposite(BigInt aPowD, int32_t s, BigInt n);
 bool is_prime(BigInt i);
 
 #endif

@@ -1,6 +1,5 @@
 #include "BigIntIO.h"
 #include "../BigInt/BigInt.h"
-#include "../Config.h"
 #include <string.h>
 #include <malloc.h>
 
@@ -45,11 +44,11 @@ bool runConvertBigIntBaseCmd(CmdParam cmdParam, FILE* file) {
 	BigInt n;
 	char* resStr;
 	if (cmdParam.params[0][0] == '2') {
-		binStrToBigInt(cmdParam.params[2]);
+		n = binStrToBigInt(cmdParam.params[2]);
 		resStr = bigIntToDecStr(&n);
 	}
 	else {
-		decStrToBigInt(cmdParam.params[2]);
+		n = decStrToBigInt(cmdParam.params[2]);
 		resStr = bigIntToBinStr(&n);
 	}
 	fprintf(file, "%s\n", resStr);
@@ -109,16 +108,8 @@ bool runNotCmd(CmdParam cmdParam, FILE* file) {
 bool runBitMoveCmd(CmdParam cmdParam, FILE* file) {
 	char* resStr;
 	BigInt res;
-	BigInt n1;
-	int32_t movingSteps;
-	if (cmdParam.params[0][0] == '2') {
-		n1 = binStrToBigInt(cmdParam.params[1]);
-		movingSteps = getValue(binStrToBigInt(cmdParam.params[3]));
-	}
-	else {
-		n1 = decStrToBigInt(cmdParam.params[1]);
-		movingSteps = getValue(decStrToBigInt(cmdParam.params[3]));
-	}
+	BigInt n1 = (cmdParam.params[0][0] == '2') ? binStrToBigInt(cmdParam.params[1]) : decStrToBigInt(cmdParam.params[1]);
+	int32_t movingSteps = getValue(decStrToBigInt(cmdParam.params[3]));
 
 	switch (cmdParam.params[2][0]) {
 	case '>':
@@ -273,7 +264,7 @@ CmdParam convertCmdLineToParam(const char* line) {
 	param.params = NULL;
 	param.paramCount = 0;
 
-	uint8_t cmdStructBuffLen = (strlen(line) + 1);
+	uint16_t cmdStructBuffLen = (strlen(line) + 1);
 	char* cmdStruct_Clone = (char*)malloc(cmdStructBuffLen);
 	strcpy_s(cmdStruct_Clone, cmdStructBuffLen, line);
 
