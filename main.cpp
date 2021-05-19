@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <string.h>
+#include <time.h>
 #include "BigIntIO/BigIntIO.h"
 #include "BigInt/BigInt.h"
 
@@ -31,6 +32,7 @@ void runInputCommands(FILE *inF, const char *outPath) {
 }
 
 void main(int argCount, char **args) {
+
 	// -9485571363021587 * 24689531702694
 	BigInt a = decStrToBigInt("-9485571363021587");
 	BigInt b = decStrToBigInt("24689531702694");
