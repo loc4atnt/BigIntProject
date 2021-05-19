@@ -506,20 +506,10 @@ uint16_t digits(BigInt *i) {
 }
 
 BigInt pow(BigInt a, BigInt e) {
-	static uint32_t count = 0;
-	printf("%d\n", count);
-	count++;
 	if (e == 0) return assignValue(1);
 	else if (e == 1) return a;
 	else {
-		printf("H\n");
 		BigInt n = pow(a, e >> 1);
-		printf("G\n");
-		char* str = bigIntToDecStr(&n);
-		printf("%s\n", str);
-		free(str);
-		n* n;
-		printf("E\n");
 		return (isOddBigInt(&e) ? n * n * a : n * n);
 	}
 }
