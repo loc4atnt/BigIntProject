@@ -27,30 +27,11 @@ void runInputCommands(FILE *inF, const char *outPath) {
 			printf("+ | Lenh \"%s\" thuc hien xong!\n", buff);
 		}
 
-		fclose(ouF);
+		fclose(ouF);// Dong file de luu ket qua tung lenh, tranh hien tuong crash khi thuc hien cac dong lenh tiep theo
 	}
 }
 
 void main(int argCount, char **args) {
-
-	// -9485571363021587 * 24689531702694
-	BigInt a = decStrToBigInt("-9485571363021587");
-	BigInt b = decStrToBigInt("24689531702694");
-	BigInt c = a * b;
-	char* str = to_base10(&a);
-	printf("%s\n", str);
-	free(str);
-	return;
-
-	//resetDebugTime();
-	//BigInt a = decStrToBigInt("235463381314039523573896854894651656220931");
-	//debugTime("a");
-	//resetDebugTime();
-	//char* str = to_base10(&a);
-	//debugTime("str");
-	//printf("%s", str);
-	//free(str);
-	//return;
 
 	if (argCount < 3) {
 		printf("Sai cu phap!\n");
@@ -58,20 +39,17 @@ void main(int argCount, char **args) {
 		return;
 	}
 
+	printf("\nDang ky lenh input.....\n");
+	registerInputCommnands();
+	printf("----- Dang ky lenh input thanh cong -----\n");
+
 	FILE* inpFile = NULL;
-
 	fopen_s(&inpFile, args[1], "r");
-
 	if ((!inpFile)) {
 		printf("Duong dan File khong ton tai!\n");
 		return;
 	}
-
 	printf("----- Mo file thanh cong -----\n");
-
-	printf("\nDang ky lenh input.....\n");
-	registerInputCommnands();
-	printf("----- Dang ky lenh input thanh cong -----\n");
 
 	printf("\nChay lenh tu file %s.....\n", args[1]);
 	runInputCommands(inpFile, args[2]);

@@ -91,14 +91,12 @@ bool runNotCmd(CmdParam cmdParam, FILE* file) {
 	BigInt n;
 	char* resStr;
 	if (cmdParam.params[0][0] == '2') {
-		binStrToBigInt(cmdParam.params[2]);
-		n = ~n;
-		resStr = bigIntToDecStr(&n);
+		n = ~binStrToBigInt(cmdParam.params[2]);
+		resStr = bigIntToBinStr(&n);
 	}
 	else {
-		decStrToBigInt(cmdParam.params[2]);
-		n = ~n;
-		resStr = bigIntToBinStr(&n);
+		n = ~decStrToBigInt(cmdParam.params[2]);
+		resStr = bigIntToDecStr(&n);
 	}
 	fprintf(file, "%s\n", resStr);
 	free(resStr);
@@ -189,6 +187,67 @@ bool runAbsDigitPrimeToBaseCmd(CmdParam cmdParam, FILE* file) {
 	return false;
 }
 
+bool runCompare1CharCmd(CmdParam cmdParam, FILE* file) {
+	char* resStr;
+	bool res = false;
+	BigInt n1, n2;
+	if (cmdParam.params[0][0] == '2') {
+		n1 = binStrToBigInt(cmdParam.params[1]);
+		n2 = binStrToBigInt(cmdParam.params[3]);
+	}
+	else {
+		n1 = decStrToBigInt(cmdParam.params[1]);
+		n2 = decStrToBigInt(cmdParam.params[3]);
+	}
+
+	switch (cmdParam.params[2][0]) {
+	case '>':
+		res = (n1 > n2);
+		break;
+	case '<':
+		res = (n1 < n2);
+		break;
+	}
+
+	resStr = boolToString(res);
+	fprintf(file, "%s\n", resStr);
+	free(resStr);
+	return true;
+}
+
+bool runCompare2CharCmd(CmdParam cmdParam, FILE* file) {
+	char* resStr;
+	bool res = false;
+	BigInt n1, n2;
+	if (cmdParam.params[0][0] == '2') {
+		n1 = binStrToBigInt(cmdParam.params[1]);
+		n2 = binStrToBigInt(cmdParam.params[3]);
+	}
+	else {
+		n1 = decStrToBigInt(cmdParam.params[1]);
+		n2 = decStrToBigInt(cmdParam.params[3]);
+	}
+
+	switch (cmdParam.params[2][0]) {
+	case '>':
+		res = (n1 >= n2);
+		break;
+	case '<':
+		res = (n1 <= n2);
+		break;
+	case '=':
+		res = (n1 == n2);
+		break;
+	case '!':
+		res = (n1 != n2);
+	}
+
+	resStr = boolToString(res);
+	fprintf(file, "%s\n", resStr);
+	free(resStr);
+	return true;
+}
+
 void registerInputCommnands() {
 	registerInputCommnand("2 <> + <>", runCalCmd);
 	registerInputCommnand("2 <> - <>", runCalCmd);
@@ -240,6 +299,20 @@ void registerInputCommnands() {
 	registerInputCommnand("10 to_base58 <>", runAbsDigitPrimeToBaseCmd);
 	registerInputCommnand("10 to_base64 <>", runAbsDigitPrimeToBaseCmd);
 	registerInputCommnand("10 is_prime <>", runAbsDigitPrimeToBaseCmd);
+
+	// > <    >= <= == !=
+	registerInputCommnand("2 <> > <>", runCompare1CharCmd);
+	registerInputCommnand("2 <> < <>", runCompare1CharCmd);
+	registerInputCommnand("10 <> > <>", runCompare1CharCmd);
+	registerInputCommnand("10 <> < <>", runCompare1CharCmd);
+	registerInputCommnand("2 <> >= <>", runCompare2CharCmd);
+	registerInputCommnand("2 <> <= <>", runCompare2CharCmd);
+	registerInputCommnand("2 <> == <>", runCompare2CharCmd);
+	registerInputCommnand("2 <> != <>", runCompare2CharCmd);
+	registerInputCommnand("10 <> >= <>", runCompare2CharCmd);
+	registerInputCommnand("10 <> <= <>", runCompare2CharCmd);
+	registerInputCommnand("10 <> == <>", runCompare2CharCmd);
+	registerInputCommnand("10 <> != <>", runCompare2CharCmd);
 }
 
 void registerInputCommnand(const char* cmdStruct, CommandFunction cmdFunc) {

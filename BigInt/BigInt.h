@@ -81,11 +81,13 @@ bool operator < (BigInt a, BigInt b);
 bool operator <= (BigInt a, BigInt b);
 bool operator == (BigInt a, BigInt b);
 bool operator == (BigInt a, int b);
+bool operator != (BigInt a, BigInt b);
 bool operator != (BigInt a, int b);
 
 bool readBit(BigInt *a, uint16_t idx);
 void setBit(BigInt *a, uint16_t idx, bool bit);
 uint16_t getBitLen(BigInt* bigInt);
+uint16_t getZeroBitSuffixLen(BigInt* i);
 
 BigInt abs(BigInt i);
 BigInt min(BigInt a, BigInt b);
@@ -100,6 +102,7 @@ char* to_base32(BigInt i);
 char* to_base64(BigInt i);
 
 static int PRIME_CHECKING_A[3] = { 2,7,61 };
+BigInt powAndMod(BigInt a, BigInt e, BigInt m);
 void primeDecomposeNum(BigInt n, int32_t* s, BigInt* d);
 BigInt powOf2With(int32_t s);
 bool checkSecondConditionOfComposite(BigInt aPowD, int32_t s, BigInt n);

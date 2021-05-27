@@ -150,12 +150,17 @@ BigInt operator * (BigInt a, BigInt b) {
 		swap(&a, &b);
 	}
 
+	uint16_t tmp;
 	while (b > 0) {
 		if (isOddBigInt(&b)) {
 			res = res + a;
+			tmp = 1;
 		}
-		a = a << 1;// a*=2
-		b = b >> 1;// b/=2;
+		else {
+			tmp = getZeroBitSuffixLen(&b);
+		}
+		a = a << tmp;// a*=(2^tmp);
+		b = b >> tmp;// b/=(2^tmp);
 	}
 	if (isResNegative) return oppositeNum(res);
 	return res;
@@ -465,6 +470,10 @@ bool operator == (BigInt a, int b) {
 	return a == bigIntB;
 }
 
+bool operator != (BigInt a, BigInt b) {
+	return !(a == b);
+}
+
 bool operator != (BigInt a, int b) {
 	return !(a == b);
 }
@@ -530,8 +539,6 @@ char* to_string(BigInt* i) {
 }
 
 char* to_base32Or64(BigInt *i, int8_t byteRoundingAmount, int8_t patternBitLen, char (*valueToBase)(uint8_t val)) {
-	i->isHasSign = false;
-
 	char* baseStr = (char*)malloc(1); baseStr[0] = '\0';
 	int baseStrLen = 0;
 	uint8_t paddingByteAmount = (byteRoundingAmount - (i->byteCount % byteRoundingAmount)) % byteRoundingAmount;
@@ -643,7 +650,7 @@ char* to_base10(BigInt *n) {
 	return base10Str;
 }
 
-//////////
+///////////////
 void primeDecomposeNum(BigInt n, int32_t *s, BigInt *d) {// n = (2^s)*d
 	(*s) = 0;
 	while (readBit(&n, 0) == 0) {
@@ -658,16 +665,27 @@ BigInt powOf2With(int32_t s) {
 	return (assignValue(1) << s);
 }
 
-bool checkSecondConditionOfComposite(BigInt aPowD, int32_t s, BigInt n) {
+bool checkSecondConditionOfComposite(BigInt aPowDModN, int32_t s, BigInt n) {
 	BigInt _n = (n - assignValue(1));
-	BigInt tmp;
 	if (s < 0) s = 0;
 	while (s >= 0) {
-		tmp = pow(aPowD, powOf2With(s));
-		if ((tmp % n) == _n) return false;
+		if (aPowDModN == _n) return false;
+		aPowDModN = (aPowDModN * aPowDModN) % n;
 		s--;
 	}
 	return true;
+}
+
+// (a^e) mod m
+BigInt powAndMod(BigInt a, BigInt e, BigInt m) {
+	a = a % m;
+	BigInt res = assignValue(1);
+	while (e > 0) {
+		if (isOddBigInt(&e)) res = (res * a) % m;
+		a = (a * a) % m;
+		e = e >> 1;
+	}
+	return res;
 }
 
 bool is_prime(BigInt n) {
@@ -676,16 +694,33 @@ bool is_prime(BigInt n) {
 
 	int32_t s;
 	BigInt d;
-	BigInt aPowD;
+	BigInt aPowDModN;
 	BigInt a;
 	primeDecomposeNum(n - assignValue(1), &s, &d);
 
 	for (int i = 0; i < 3; i++) {
 		a = assignValue(PRIME_CHECKING_A[i]);
 		if (a >= n) break;
-		aPowD = pow(a, d);
-		if ((aPowD % n) != 1 && checkSecondConditionOfComposite(aPowD, s - 1, n)) return false;
+		aPowDModN = powAndMod(a, d, n);
+		if (aPowDModN != 1 && checkSecondConditionOfComposite(aPowDModN, s - 1, n)) return false;
 	}
 
 	return true;
+}
+
+uint16_t getZeroBitSuffixLen(BigInt* n) {
+	if (n == 0) return 0;
+	uint16_t len = 0;
+	int i;
+	for (i = 0; i < n->byteCount; i++) {
+		if (n->bytes[i] == 0) len += 8;
+		else break;
+	}
+	if (i < n->byteCount) {
+		for (int j = 0; j < 8; j++) {
+			if (readBit(n->bytes[i], j)) break;
+			else len++;
+		}
+	}
+	return len;
 }
